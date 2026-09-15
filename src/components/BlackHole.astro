@@ -28,6 +28,13 @@
     overflow: hidden;
     background: #000 url("/brand/sky.webp") center / cover no-repeat;
   }
+  /* The renderer switches to its centred composition under 768px; the
+     poster switches with it, so the two never disagree. */
+  @media (max-width: 767px) {
+    .sky {
+      background-image: url("/brand/sky-portrait.webp");
+    }
+  }
   .hole {
     display: block;
     width: 100%;
@@ -39,25 +46,30 @@
   .hole.lit {
     opacity: 1;
   }
-  /* Scrims: the header stays legible over the ring, and the sky settles
-     into the page ground instead of ending on a line. */
+  /* Scrims, all local: the header stays legible over the ring, the words
+     get a little more dark behind them where the disk reaches them, and
+     the sky settles into the page ground instead of ending on a line. */
   .sky::before,
   .sky::after {
     content: "";
     position: absolute;
-    left: 0;
-    right: 0;
+    inset: 0;
     pointer-events: none;
   }
   .sky::before {
-    top: 0;
-    height: 140px;
-    background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
+    background:
+      linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0) 140px),
+      linear-gradient(90deg, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.3) 38%, rgba(0, 0, 0, 0) 62%);
   }
   .sky::after {
-    bottom: 0;
-    height: 160px;
-    background: linear-gradient(rgba(13, 13, 13, 0), var(--ground));
+    background: linear-gradient(rgba(13, 13, 13, 0) calc(100% - 160px), var(--ground));
+  }
+  @media (max-width: 767px) {
+    .sky::before {
+      background:
+        linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0) 120px),
+        radial-gradient(ellipse 80% 42% at 50% 50%, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 100%);
+    }
   }
 </style>
 
@@ -65,7 +77,10 @@
   import { createRenderer } from "../hero/renderer";
 
   const canvas = document.querySelector<HTMLCanvasElement>("canvas.hole");
-  if (canvas && "gpu" in navigator) {
+  // ?poster forces the fallback, so the two can be compared on a machine
+  // that has WebGPU.
+  const wantsPoster = new URLSearchParams(location.search).has("poster");
+  if (canvas && "gpu" in navigator && !wantsPoster) {
     const renderer = createRenderer({ canvas });
     renderer.ready.then(
       () => canvas.classList.add("lit"),

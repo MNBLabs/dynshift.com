@@ -30,8 +30,9 @@ its shaders are untouched. `src/components/BlackHole.astro` mounts it,
 shows it only once the first frame is ready, and leaves the poster in place
 wherever WebGPU is unavailable.
 
-The poster (`public/brand/sky.webp`) is a frame of the same renderer, drawn
-headlessly. Regenerate it with `npm run poster` (needs ImageMagick 7 on
+The posters (`public/brand/sky.webp`, `public/brand/sky-portrait.webp` for the
+phone layout) are frames of the same renderer, drawn headlessly. Regenerate
+them with `npm run poster` (needs ImageMagick 7 on
 PATH as `magick`) after changing anything under `src/hero/`.
 
 ## The root domain and AdSense
@@ -47,4 +48,4 @@ Do not remove either. No advertisements are served on this site.
 
 ## Fonts
 
-Onest, under `public/fonts/OFL.txt`.
+Geist and Geist Mono, under `public/fonts/OFL.txt`.

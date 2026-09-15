@@ -7,7 +7,7 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "poster": "node --experimental-strip-types --import ./tools/register.mjs tools/poster.mjs 1600 900 public/brand/sky.png && magick public/brand/sky.png -quality 82 -strip public/brand/sky.webp && node -e \"require('fs').unlinkSync('public/brand/sky.png')\""
+    "poster": "node --experimental-strip-types --import ./tools/register.mjs tools/poster.mjs 1600 900 public/brand/sky.png && magick public/brand/sky.png -quality 82 -strip public/brand/sky.webp && node --experimental-strip-types --import ./tools/register.mjs tools/poster.mjs 900 1600 public/brand/sky-portrait.png --mobile && magick public/brand/sky-portrait.png -quality 82 -strip public/brand/sky-portrait.webp && node tools/clean-posters.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.6.0",

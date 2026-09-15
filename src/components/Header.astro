@@ -33,9 +33,10 @@ const home = Astro.url.pathname === "/";
   }
   nav {
     display: flex;
-    gap: clamp(16px, 3vw, 32px);
+    gap: clamp(18px, 3vw, 32px);
     font-weight: 500;
-    font-size: 0.98rem;
+    font-size: 0.92rem;
+    letter-spacing: -0.005em;
   }
   nav a {
     color: var(--ink2);
@@ -44,5 +45,13 @@ const home = Astro.url.pathname === "/";
   }
   nav a:hover {
     color: var(--ink);
+  }
+  @media (max-width: 480px) {
+    .top {
+      padding-block: 18px;
+    }
+    nav {
+      font-size: 0.88rem;
+    }
   }
 </style>

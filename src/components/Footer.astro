@@ -16,11 +16,7 @@ const year = new Date().getFullYear();
         <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
       </nav>
     </div>
-    <p class="legal">
-      © {year} DynShift. DynShift, PhonePad and Privogram are trademarks of
-      DynShift; none is registered, and a registration for Privogram is pending.
-      Other names belong to their owners.
-    </p>
+    <p class="legal meta">© {year} DynShift. All rights reserved.</p>
   </div>
 </footer>
 
@@ -58,5 +54,14 @@ const year = new Date().getFullYear();
     margin: 28px 0 0;
     max-width: none;
     color: var(--ink3);
+  }
+  @media (max-width: 640px) {
+    .cols {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    nav {
+      gap: 10px 20px;
+    }
   }
 </style>

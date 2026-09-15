@@ -31,7 +31,7 @@ const { project: p } = Astro.props;
   </div>
   <p class="sum">{p.summary}</p>
   <div class="foot">
-    <ul class="facts" aria-label="Facts">
+    <ul class="facts meta" aria-label="Facts">
       {p.facts.map((f) => <li>{f}</li>)}
     </ul>
     {

@@ -65,10 +65,9 @@ import { GITHUB, CONTACT } from "../consts";
         </p>
         <p>
           Most of the work is open source and published under
-          <a href={GITHUB} rel="noopener">MNBLabs</a> on GitHub. Where a
-          project is not, the reason is the product: Privogram, a private
-          social app, is also a DynShift brand and lives at
-          <a href="https://privogram.com/" rel="noopener">privogram.com</a>.
+          <a href={GITHUB} rel="noopener">MNBLabs</a> on GitHub. DynShift is
+          also home to <a href="https://privogram.com/" rel="noopener">Privogram</a>,
+          a private social app.
         </p>
         <p>
           Software is the starting point. The intention is to grow from here
@@ -91,7 +90,7 @@ import { GITHUB, CONTACT } from "../consts";
     /* The header sits above the sky, so the sky starts under it. */
     margin-top: -80px;
     padding-top: 80px;
-    min-height: min(88vh, 860px);
+    min-height: min(100svh, 880px);
     display: flex;
     align-items: center;
     overflow: hidden;
@@ -102,35 +101,39 @@ import { GITHUB, CONTACT } from "../consts";
   .copy {
     display: flex;
     flex-direction: column;
-    gap: 26px;
-    max-width: 640px;
+    gap: 24px;
+    /* Wide enough for the line to breathe, narrow enough to stay clear of
+       the disk on a tablet; the renderer keeps the hole on the right. */
+    max-width: min(600px, 54%);
   }
   .copy h1 {
-    text-shadow: 0 2px 40px rgba(0, 0, 0, 0.6);
+    text-shadow: 0 2px 40px rgba(0, 0, 0, 0.7);
   }
   .lede {
-    font-size: clamp(1.1rem, 1.6vw, 1.32rem);
-    line-height: 1.5;
+    font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+    line-height: 1.55;
     color: var(--ink2);
-    max-width: 42ch;
+    max-width: 40ch;
     text-wrap: pretty;
-    text-shadow: 0 1px 24px rgba(0, 0, 0, 0.8);
+    text-shadow: 0 1px 24px rgba(0, 0, 0, 0.9);
   }
   .actions {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: 14px 28px;
-    margin-top: 6px;
+    margin-top: 8px;
   }
   .btn {
     display: inline-flex;
     align-items: center;
-    padding: 14px 22px;
+    padding: 13px 22px;
     background: var(--ink);
     color: var(--ground);
     border-radius: 999px;
-    font-weight: 600;
+    font-weight: 500;
+    font-size: 0.95rem;
+    letter-spacing: -0.01em;
     text-decoration: none;
     transition:
       transform var(--beat),
@@ -146,6 +149,7 @@ import { GITHUB, CONTACT } from "../consts";
   .quiet {
     color: var(--ink2);
     font-weight: 500;
+    font-size: 0.95rem;
     text-decoration-color: transparent;
   }
   .quiet:hover {
@@ -174,6 +178,56 @@ import { GITHUB, CONTACT } from "../consts";
       opacity: 1;
       transform: none;
       filter: blur(0);
+    }
+  }
+
+  /* On a tablet the renderer keeps its desktop composition, and the disk's
+     stream crosses the middle of the frame; the lower left stays dark, so
+     the words go there. */
+  @media (min-width: 768px) and (max-width: 1099px) {
+    .hero {
+      align-items: flex-end;
+    }
+    .hero .wrap {
+      padding-block: 48px 72px;
+    }
+    .copy {
+      max-width: min(520px, 62%);
+    }
+    .lede {
+      max-width: 36ch;
+    }
+  }
+
+  /* The phone composition is its own: the renderer centres the hole and
+     darkens a band across the middle for exactly this, so the words sit
+     centred in that band with the disk above and below them. */
+  @media (max-width: 767px) {
+    .hero {
+      min-height: 100svh;
+      align-items: center;
+    }
+    .hero .wrap {
+      padding-block: 64px;
+    }
+    .copy {
+      max-width: 34rem;
+      margin-inline: auto;
+      align-items: center;
+      text-align: center;
+      gap: 20px;
+    }
+    .copy h1 {
+      font-size: clamp(2.6rem, 12vw, 3.4rem);
+    }
+    .lede {
+      font-size: 1.02rem;
+      max-width: 32ch;
+    }
+    .actions {
+      flex-direction: column;
+      gap: 18px;
+      margin-top: 10px;
     }
   }
 
@@ -227,8 +281,9 @@ import { GITHUB, CONTACT } from "../consts";
     font-size: 0.95rem;
   }
   .pkgs code {
-    font-family: var(--sans);
-    font-weight: 600;
+    font-family: var(--mono);
+    font-size: 0.86rem;
+    font-weight: 500;
     color: var(--ink);
   }
   .pkgs li a {
@@ -250,8 +305,9 @@ import { GITHUB, CONTACT } from "../consts";
   }
   .prose-cols p {
     color: var(--ink2);
-    font-size: 1.06rem;
+    font-size: 1.04rem;
     max-width: 58ch;
+    text-wrap: pretty;
   }
   .contact {
     margin-top: 1.6em;
@@ -259,10 +315,6 @@ import { GITHUB, CONTACT } from "../consts";
   }
 
   @media (max-width: 820px) {
-    .hero {
-      min-height: min(78vh, 720px);
-      align-items: flex-end;
-    }
     .studio .grid {
       grid-template-columns: 1fr;
     }

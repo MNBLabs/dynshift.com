@@ -1,7 +1,8 @@
 ---
 /**
- * The lockup. The wordmark is centred on the body of the mark (the D, not
- * the arrow above it), and the mark stands about two cap-heights tall.
+ * The wordmark, set in type. There is no mark on the site: the logo is not
+ * final, and a wordmark that is simply the name in the site's own face
+ * ages better than a placeholder.
  */
 interface Props {
   size?: "header" | "footer";
@@ -9,33 +10,19 @@ interface Props {
 const { size = "header" } = Astro.props;
 ---
 
-<span class:list={["lockup", size]}>
-  <img src="/brand/mark-on-dark.webp" alt="" width="963" height="907" decoding="async" />
-  <span class="word">DynShift</span>
-</span>
+<span class:list={["wordmark", size]}>DynShift</span>
 
 <style>
-  .lockup {
-    display: inline-flex;
-    align-items: flex-end;
-    gap: 0.5em;
-    font-family: var(--display);
-    font-weight: 700;
-    letter-spacing: -0.03em;
+  .wordmark {
+    font-family: var(--sans);
+    font-weight: 600;
+    font-size: 1.12rem;
+    letter-spacing: -0.035em;
     line-height: 1;
-    font-size: 1.3rem;
+    color: var(--ink);
   }
-  .lockup.footer {
+  .wordmark.footer {
     font-size: 1rem;
-  }
-  img {
-    height: 2em;
-    width: auto;
-    display: block;
-  }
-  .word {
-    /* The D's centre is ~0.64em above the mark's foot; the cap centre is
-       ~0.36em above the baseline; the line box keeps ~0.2em below it. */
-    margin-bottom: 0.1em;
+    color: var(--ink2);
   }
 </style>

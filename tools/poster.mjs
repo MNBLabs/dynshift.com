@@ -1,8 +1,9 @@
 // Renders one frame of the hero's black hole headlessly and writes it as the
 // poster the page shows while WebGPU is unavailable or still warming up.
 //
-//   node --experimental-strip-types --import ./tools/register.mjs tools/poster.mjs
-//   -> public/brand/sky.png, then `magick public/brand/sky.png public/brand/sky.webp`
+//   npm run poster
+//   -> public/brand/sky.webp (1600x900, desktop layout) and
+//      public/brand/sky-portrait.webp (900x1600, the renderer's mobile layout)
 //
 // Same pipeline, same settings as the browser: the poster is a frame of the
 // real thing, not an approximation of it.
@@ -22,6 +23,9 @@ import { createNoiseVolume, NOISE_VOLUME_SIZE, noiseVolumeSampler } from "../src
 const WIDTH = Number(process.argv[2] ?? 1600);
 const HEIGHT = Number(process.argv[3] ?? 900);
 const OUT = process.argv[4] ?? "public/brand/sky.png";
+// --mobile applies the renderer's own under-768px layout: hole centred,
+// no roll, no pointer yaw, the copy band faded.
+const MOBILE = process.argv.includes("--mobile");
 
 const here = (p) => fileURLToPath(new URL(p, import.meta.url));
 const shader = async (name) => (await resolveShader({ entry: here(`../src/hero/${name}.wgsl`) })).wgsl;
@@ -35,6 +39,7 @@ try {
   const settings = defaultHeroSettings();
   settings.bloom.radius *= 0.5;
   settings.bloom.strength *= 0.5;
+  if (MOBILE) Object.assign(settings, { centerX: 0, centerY: 0, cameraRoll: 0, mouseYaw: 0, centerFade: 1 });
 
   const postSampler = vgpu.sampler(gpu, { minFilter: "linear", magFilter: "linear" });
   const effects = {
