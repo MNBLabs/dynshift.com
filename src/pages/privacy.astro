@@ -1,0 +1,52 @@
+---
+import Base from "../layouts/Base.astro";
+import { CONTACT } from "../consts";
+---
+
+<Base title="Privacy" description="What dynshift.com collects: nothing it can avoid. No cookies, no analytics, no advertising on this page.">
+  <section class="wrap prose">
+    <h1>Privacy</h1>
+    <p class="muted small">Last updated 15 September 2026.</p>
+
+    <h2>This website</h2>
+    <p>
+      <strong>dynshift.com sets no cookies and runs no analytics.</strong> It
+      is a set of static pages. There is nothing to sign up for, no form to
+      fill in and no script that reports your visit anywhere.
+    </p>
+    <p>
+      The site is hosted on GitHub Pages. As with any web host, GitHub's
+      servers see the request for each page, including your IP address, and
+      handle it under
+      <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub's privacy statement</a>.
+      DynShift does not receive or keep those logs.
+    </p>
+    <p>
+      One tag in each page's head names an advertising account. It is a
+      static site-ownership marker for Google AdSense: it loads nothing,
+      stores nothing and shows nothing. <strong>No advertisements are served
+      on dynshift.com.</strong>
+    </p>
+
+    <h2>Product sites</h2>
+    <p>
+      Each DynShift product lives on its own site with its own policy, which
+      is the one that applies there:
+    </p>
+    <ul>
+      <li><a href="https://phonepad.dynshift.com/privacy/">PhonePad</a></li>
+      <li><a href="https://layr.dynshift.com/" rel="noopener">Layr</a></li>
+    </ul>
+
+    <h2>Contact</h2>
+    <p>
+      Questions about this policy: <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  section {
+    padding-block: clamp(24px, 5vw, 56px);
+  }
+</style>

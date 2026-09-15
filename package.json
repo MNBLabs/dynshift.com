@@ -1,0 +1,23 @@
+{
+  "name": "dynshift-site",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check",
+    "poster": "node --experimental-strip-types --import ./tools/register.mjs tools/poster.mjs 1600 900 public/brand/sky.png && magick public/brand/sky.png -quality 82 -strip public/brand/sky.webp && node -e \"require('fs').unlinkSync('public/brand/sky.png')\""
+  },
+  "dependencies": {
+    "@astrojs/sitemap": "^3.6.0",
+    "astro": "^5.16.0",
+    "vgpu": "^0.5.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.4",
+    "@webgpu/types": "^0.1.72",
+    "pngjs": "^7.0.0",
+    "typescript": "^5.9.2"
+  }
+}

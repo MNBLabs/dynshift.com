@@ -1,0 +1,41 @@
+---
+/**
+ * The lockup. The wordmark is centred on the body of the mark (the D, not
+ * the arrow above it), and the mark stands about two cap-heights tall.
+ */
+interface Props {
+  size?: "header" | "footer";
+}
+const { size = "header" } = Astro.props;
+---
+
+<span class:list={["lockup", size]}>
+  <img src="/brand/mark-on-dark.webp" alt="" width="963" height="907" decoding="async" />
+  <span class="word">DynShift</span>
+</span>
+
+<style>
+  .lockup {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 0.5em;
+    font-family: var(--display);
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    font-size: 1.3rem;
+  }
+  .lockup.footer {
+    font-size: 1rem;
+  }
+  img {
+    height: 2em;
+    width: auto;
+    display: block;
+  }
+  .word {
+    /* The D's centre is ~0.64em above the mark's foot; the cap centre is
+       ~0.36em above the baseline; the line box keeps ~0.2em below it. */
+    margin-bottom: 0.1em;
+  }
+</style>

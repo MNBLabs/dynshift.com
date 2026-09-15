@@ -1,0 +1,162 @@
+---
+import type { Project } from "../data/projects";
+interface Props {
+  project: Project;
+}
+const { project: p } = Astro.props;
+---
+
+<article class="tile">
+  <a class="cover" href={p.url} aria-label={`${p.name}: ${p.tagline}`}></a>
+  <div class="head">
+    <img src={p.icon} alt="" width="56" height="56" loading="lazy" decoding="async" />
+    <div>
+      <h3>{p.name}</h3>
+      <p class="tag">{p.tagline}</p>
+    </div>
+    <span class="go" aria-hidden="true">
+      <svg
+        viewBox="0 0 24 24"
+        width="22"
+        height="22"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M5 12h14M13 6l6 6-6 6"></path>
+      </svg>
+    </span>
+  </div>
+  <p class="sum">{p.summary}</p>
+  <div class="foot">
+    <ul class="facts" aria-label="Facts">
+      {p.facts.map((f) => <li>{f}</li>)}
+    </ul>
+    {
+      p.links.length > 0 && (
+        <span class="links">
+          {p.links.map((l) => (
+            <a href={l.href} rel="noopener">
+              {l.label}
+            </a>
+          ))}
+        </span>
+      )
+    }
+  </div>
+</article>
+
+<style>
+  .tile {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    padding: 26px;
+    background: var(--raised);
+    border: 1px solid var(--line);
+    border-radius: var(--r-l);
+    transition:
+      border-color var(--beat),
+      transform var(--beat),
+      background var(--beat);
+  }
+  /* The whole tile is the link; the small links inside it sit above the cover. */
+  .cover {
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    z-index: 1;
+  }
+  .tile:hover {
+    border-color: var(--line-strong);
+    background: var(--raised-2);
+    transform: translateY(-2px);
+  }
+  .tile:has(.cover:focus-visible) {
+    border-color: var(--accent);
+  }
+  .cover:focus-visible {
+    outline: none;
+  }
+  .head {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .head img {
+    width: 56px;
+    height: 56px;
+    border-radius: 14px;
+    flex: none;
+  }
+  .tag {
+    margin: 2px 0 0;
+    color: var(--ink2);
+  }
+  .go {
+    margin-left: auto;
+    color: var(--ink3);
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--line);
+    flex: none;
+    transition:
+      color var(--beat),
+      border-color var(--beat),
+      background var(--beat),
+      transform var(--beat);
+  }
+  .tile:hover .go {
+    color: var(--ground);
+    background: var(--ink);
+    border-color: var(--ink);
+    transform: translateX(2px);
+  }
+  .sum {
+    margin: 0;
+    color: var(--ink2);
+    max-width: none;
+  }
+  .foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px 18px;
+    margin-top: auto;
+    padding-top: 6px;
+    font-size: 0.9rem;
+  }
+  .facts {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 0;
+    color: var(--ink3);
+  }
+  .facts li + li::before {
+    content: "·";
+    margin: 0 8px;
+  }
+  .links {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    gap: 16px;
+  }
+  .links a {
+    color: var(--ink2);
+    font-weight: 500;
+  }
+  .links a:hover {
+    color: var(--ink);
+  }
+</style>

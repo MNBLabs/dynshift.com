@@ -1,0 +1,48 @@
+---
+import { GITHUB } from "../consts";
+import Wordmark from "./Wordmark.astro";
+const home = Astro.url.pathname === "/";
+---
+
+<header class="top">
+  <div class="wrap row">
+    <a class="brand" href="/" aria-label="DynShift home"><Wordmark /></a>
+    <nav aria-label="Primary">
+      <a href={home ? "#projects" : "/#projects"}>Projects</a>
+      <a href={home ? "#studio" : "/#studio"}>Studio</a>
+      <a href={GITHUB} rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  .top {
+    position: relative;
+    z-index: 1;
+    padding-block: 22px;
+  }
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    text-decoration: none;
+    display: inline-flex;
+  }
+  nav {
+    display: flex;
+    gap: clamp(16px, 3vw, 32px);
+    font-weight: 500;
+    font-size: 0.98rem;
+  }
+  nav a {
+    color: var(--ink2);
+    text-decoration: none;
+    padding: 6px 0;
+  }
+  nav a:hover {
+    color: var(--ink);
+  }
+</style>

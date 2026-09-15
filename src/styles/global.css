@@ -1,0 +1,206 @@
+/*
+ * DynShift, as CSS.
+ *
+ * The world comes from the mark's artwork: a near-black studio ground, foil
+ * grain that catches ember and teal light, and a magenta-to-indigo core. The
+ * light lives only where the mark lives. Everything else is set in quiet
+ * type and one accent.
+ */
+
+@font-face {
+  font-family: "Onest";
+  src: url("/fonts/Onest-Variable.woff2") format("woff2");
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+:root {
+  --ground: #0d0d0d;
+  --raised: #151515;
+  --raised-2: #1b1b1c;
+  --line: rgba(255, 255, 255, 0.08);
+  --line-strong: rgba(255, 255, 255, 0.18);
+
+  --ink: #f3f2f6;
+  --ink2: #a8a6b4;
+  --ink3: #7a788b;
+
+  /* The one accent, from the mark's core. */
+  --accent: #ff3d9e;
+  --accent-ink: #ffd2e9;
+
+  /* The light. Only the hero canvas and the mark use these. */
+  --ember: #ff6444;
+  --gold: #ffc46b;
+  --teal: #2ed3c4;
+  --indigo: #1b1f8f;
+  --magenta: #ff009b;
+
+  --page: 1120px;
+  --gutter: clamp(20px, 5vw, 48px);
+  --measure: 62ch;
+
+  --r-l: 20px;
+  --r-m: 14px;
+  --r-s: 8px;
+
+  --ease: cubic-bezier(0.19, 1, 0.22, 1);
+  --beat: 240ms var(--ease);
+
+  --sans: "Onest", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+  --display: var(--sans);
+
+  color-scheme: dark;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 80px;
+  scrollbar-color: #2a2a2a var(--ground);
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 17px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "tnum";
+}
+
+main {
+  flex: 1;
+}
+
+::selection {
+  background: rgba(255, 61, 158, 0.32);
+  color: var(--ink);
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: var(--r-s);
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+::-webkit-scrollbar-thumb {
+  background: #2a2a2a;
+  border: 3px solid var(--ground);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--ground);
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--display);
+  margin: 0;
+  text-wrap: balance;
+}
+
+h1 {
+  font-weight: 700;
+  font-size: clamp(2.6rem, 7vw, 5.2rem);
+  line-height: 1;
+  letter-spacing: -0.035em;
+}
+
+h2 {
+  font-weight: 600;
+  font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.028em;
+}
+
+h3 {
+  font-weight: 650;
+  font-size: 1.3rem;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+p {
+  margin: 0 0 1em;
+  max-width: var(--measure);
+}
+
+a {
+  color: var(--ink);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 0.18em;
+  text-decoration-color: var(--line-strong);
+  transition: text-decoration-color var(--beat), color var(--beat);
+}
+a:hover {
+  text-decoration-color: var(--accent);
+}
+
+.muted {
+  color: var(--ink2);
+}
+.small {
+  font-size: 0.94rem;
+}
+
+.wrap {
+  width: min(100% - 2 * var(--gutter), var(--page));
+  margin-inline: auto;
+}
+
+/* Long-form pages. */
+.prose {
+  max-width: var(--measure);
+}
+.prose h1 {
+  font-size: clamp(2.2rem, 5vw, 3.2rem);
+  margin-bottom: 0.4em;
+}
+.prose h2 {
+  font-size: 1.5rem;
+  margin: 2.2em 0 0.6em;
+}
+.prose p,
+.prose li {
+  color: var(--ink2);
+}
+.prose strong {
+  color: var(--ink);
+  font-weight: 600;
+}
+.prose ul {
+  padding-left: 1.2em;
+}
+.prose li {
+  margin-bottom: 0.5em;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
