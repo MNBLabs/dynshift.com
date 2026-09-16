@@ -1,5 +1,5 @@
 ---
-import { GITHUB, CONTACT } from "../consts";
+import { GITHUB, INSTAGRAM, CONTACT } from "../consts";
 import Wordmark from "./Wordmark.astro";
 const year = new Date().getFullYear();
 ---
@@ -13,6 +13,7 @@ const year = new Date().getFullYear();
         <a href="/#studio">Studio</a>
         <a href="/privacy/">Privacy</a>
         <a href={GITHUB} rel="noopener">GitHub</a>
+        <a href={INSTAGRAM} rel="noopener">Instagram</a>
         <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
       </nav>
     </div>

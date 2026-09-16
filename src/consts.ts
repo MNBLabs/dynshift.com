@@ -3,6 +3,7 @@ export const DESCRIPTION =
   "DynShift is an independent software studio. It builds focused, well-made tools, most of them open source, and ships them finished.";
 
 export const GITHUB = "https://github.com/MNBLabs";
+export const INSTAGRAM = "https://www.instagram.com/dynshift/";
 export const CONTACT = "official@dynshift.com";
 
 /**
