@@ -1,0 +1,179 @@
+---
+import Base from "../../layouts/Base.astro";
+
+const SITE = "https://phonepad.dynshift.com/";
+const REPO = "https://github.com/MNBLabs/phonepad";
+---
+
+<Base
+  title="PhonePad"
+  description="PhonePad turns an Android phone into a wireless Xbox-compatible controller for Windows. What it is, who it is for, what was measured, what it does not do, and where it is going."
+>
+  <section class="wrap prose">
+    <p class="meta muted">Project · Android + Windows · GPL-3.0 · Version 1.0.0, 13 September 2026</p>
+    <h1>PhonePad</h1>
+    <p class="lede">
+      An Android phone as a wireless Xbox-compatible controller for a Windows
+      PC, over the Wi-Fi you already have. Nothing to buy, no Bluetooth, no
+      cable.
+    </p>
+    <p class="links">
+      <a class="btn" href={SITE}>phonepad.dynshift.com</a>
+      <a href={REPO} rel="noopener">Source on GitHub</a>
+    </p>
+
+    <h2>The problem it solves</h2>
+    <p>
+      A growing share of PC gaming assumes a controller. Console ports often
+      have no keyboard and mouse support; Xbox Cloud Gaming streams console
+      games that cannot get past the title screen without a pad. Most people
+      have a phone within reach and no controller at all. PhonePad makes the
+      phone the pad.
+    </p>
+    <p>
+      The obvious approaches do not work. Android does not let an ordinary app
+      present the phone as a Bluetooth HID gamepad, and a keyboard emulator
+      is not a controller as far as a game is concerned. What does work is a
+      small program on the PC that creates a <em>virtual</em> Xbox 360
+      controller on an XInput slot, driven by whatever the phone sends over the
+      network. Windows lists it in <code>joy.cpl</code> like any other pad, and
+      at the level a game looks there is no difference.
+    </p>
+
+    <h2>What it consists of</h2>
+    <ul>
+      <li>
+        <strong>The app</strong>, for Android, built with Flutter. The on-screen
+        controller: sticks, triggers, d-pad, buttons, and a layout editor that
+        lets every control be moved, resized, rotated, hidden or tuned. Four
+        presets ship (Standard, Racing, Precision, Southpaw), with separate
+        arrangements for landscape and portrait that switch when the phone
+        rotates.
+      </li>
+      <li>
+        <strong>The companion</strong>, for Windows, written in Rust. A single
+        self-contained program with no installer. It creates the virtual pad
+        through the ViGEmBus driver, receives and authenticates the phone's
+        packets, and shows what is happening: round trip, packet rate, loss,
+        and why anything was rejected.
+      </li>
+      <li>
+        <strong>The protocol</strong> between them, documented in the repository
+        with a fixture both sides are tested against. Every packet is
+        authenticated with a key established at pairing, so nothing else on the
+        network can inject input. There is no account, no server and no
+        telemetry; the phone talks to the PC and to nothing else.
+      </li>
+    </ul>
+
+    <h2>What was measured</h2>
+    <p>
+      The figures the PhonePad site quotes were recorded on a Galaxy S24 Ultra
+      and a Windows 11 PC on ordinary home Wi-Fi, and the method is in the
+      repository's benchmarks document alongside the raw output.
+    </p>
+    <ul>
+      <li>Round trip, phone to PC and back: <strong>4.9 to 8.0 ms</strong>, typically about 5 ms.</li>
+      <li>Packet rate: <strong>249 a second</strong>, matching the configured target.</li>
+      <li>Loss: <strong>0.0%</strong> across 42,805 consecutive packets.</li>
+      <li>Jitter: <strong>0.1 to 0.6 ms</strong>.</li>
+      <li>
+        The virtual controller itself adds under a tenth of a millisecond on
+        average:
+        a probe writes a known state and reads it back through Windows' own
+        XInput API.
+      </li>
+    </ul>
+    <p>
+      Two findings from that work shaped the product. The first attempt at a
+      250 Hz test sender managed 65 Hz, because Windows rounds socket timeouts
+      up to its 15.6 ms scheduler tick; the sender had to be rebuilt around a
+      non-blocking socket. And the touch sticks were rebuilt rather than
+      retuned: a physical stick needs an inner deadzone to hide spring slop and
+      sensor drift, a touchscreen has neither, and the game at the far end is
+      already applying its own. Stacking a second deadzone on top left a
+      quarter of the thumb's travel doing nothing. PhonePad's output now starts
+      just past the game's dead band instead.
+    </p>
+
+    <h2>What it does not do</h2>
+    <ul>
+      <li>A phone has one vibration motor where a pad has two, so strong and weak rumble are combined.</li>
+      <li>Gyro aiming is not implemented. The protocol reserves a flag for it; nothing else exists yet.</li>
+      <li>One phone at a time.</li>
+      <li>
+        No iOS version. There is no way to ship this on iOS that works as well
+        as the Android one, and doing it badly would be worse than not doing it.
+      </li>
+      <li>
+        The Windows companion is not code-signed, so SmartScreen warns on first
+        run. Checksums for every release file are published alongside it.
+      </li>
+      <li>
+        It relies on ViGEmBus, which is archived. It works and is what Parsec
+        and DS4Windows use; the backend sits behind an interface so a successor
+        can replace it without touching anything else.
+      </li>
+    </ul>
+
+    <h2>Where it is going</h2>
+    <p>
+      There are no dates. In roughly the order they are likely to happen:
+      per-game tuning profiles with a short calibration step, a portable format
+      for sharing layouts, running the companion at login, gyro aiming, and a
+      second phone for local two-player. Not planned: an account system, a
+      server of any kind, or putting the controller behind a paywall.
+    </p>
+
+    <h2>Getting it</h2>
+    <p>
+      The <a href={SITE}>PhonePad site</a> has the setup guide, documentation
+      and troubleshooting. Releases are on
+      <a href={`${REPO}/releases`} rel="noopener">GitHub</a>: an Android APK
+      (64-bit ARM) and the Windows companion, with a SHA-256 checksum file.
+      PhonePad is not on the Play Store. Bugs go to
+      <a href={`${REPO}/issues`} rel="noopener">issues</a>, questions and ideas
+      to <a href={`${REPO}/discussions`} rel="noopener">discussions</a>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  section {
+    padding-block: clamp(24px, 5vw, 56px);
+  }
+  .meta {
+    margin-bottom: 1.2em;
+  }
+  .lede {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 24px;
+    margin: 1.4em 0 1em;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 11px 18px;
+    background: var(--ink);
+    color: var(--ground);
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+  .btn:hover {
+    background: #fff;
+  }
+  code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    color: var(--ink);
+  }
+</style>

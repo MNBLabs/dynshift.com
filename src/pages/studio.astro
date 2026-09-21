@@ -1,0 +1,138 @@
+---
+import Base from "../layouts/Base.astro";
+import { GITHUB, CONTACT, INSTAGRAM } from "../consts";
+---
+
+<Base
+  title="The studio"
+  description="What DynShift is, how it decides a tool is finished, what it publishes under which licence, who runs it and how to reach it."
+>
+  <section class="wrap prose">
+    <h1>The studio</h1>
+    <p class="lede">
+      DynShift is an independent software studio. It makes small, focused tools,
+      publishes most of them as open source, and does not call one finished
+      until it has been measured doing the job it was built for.
+    </p>
+
+    <h2>What it makes</h2>
+    <p>
+      Two kinds of thing so far. <strong>Products</strong> that a person installs
+      and uses, of which <a href="/projects/phonepad/">PhonePad</a> is the first
+      to reach a public release. And <strong>developer libraries</strong>:
+      <a href="/projects/layr/">Layr</a> for React, and a set of
+      <a href="/packages/">Flutter packages</a> on pub.dev, each solving one
+      problem that came up while building apps.
+    </p>
+    <p>
+      Software is the starting point, not the boundary. The intention is to grow
+      from tools into games, and further out into hardware. Each new project
+      appears on this site when it ships, not when it is announced.
+    </p>
+
+    <h2>How it works</h2>
+    <p>
+      One thing at a time. A project is worked on until it is done, then it is
+      released, then the next one starts. There is no portfolio of half-built
+      ideas competing for attention, because a tool that is nearly finished is
+      not useful to anyone.
+    </p>
+    <p>
+      <strong>Finished has a definition.</strong> A tool leaves the studio when
+      three things are true:
+    </p>
+    <ul>
+      <li>
+        It does the whole job it set out to do. PhonePad, for example, shipped
+        with game rumble reaching the phone, because a controller that cannot
+        rumble is not the controller it claimed to be.
+      </li>
+      <li>
+        It has been measured, not assumed to work. The latency, packet rate and
+        loss figures on PhonePad's site each come from a recorded run on real
+        hardware, with the method written down next to the result. Where
+        something was not measured, the documentation says so.
+      </li>
+      <li>
+        It reads well enough that somebody else could maintain it. Comments
+        explain why, not what; the failures that shaped a design are recorded
+        in the code that fixed them.
+      </li>
+    </ul>
+    <p>
+      That last point is why so much of the work is public. Source that will be
+      read by strangers is written more carefully than source that will not.
+    </p>
+
+    <h2>Open source, and which licence</h2>
+    <p>
+      Products are published under the <strong>GNU GPL-3.0</strong>. Anyone can
+      read, build, modify and redistribute them, and any derivative must stay
+      open on the same terms. PhonePad is GPL-3.0 and, as its own site says, the
+      controller is not going behind a paywall.
+    </p>
+    <p>
+      Libraries are published under the <strong>MIT licence</strong>, because a
+      library is only useful if it can be used inside anything, including closed
+      software. Layr and all four Flutter packages are MIT.
+    </p>
+    <p>
+      Public code lives under <a href={GITHUB} rel="noopener">MNBLabs</a> on
+      GitHub, which is the studio's organisation account. Issues, discussions
+      and pull requests are open on every public repository, and contributions
+      arrive there.
+    </p>
+
+    <h2>Names</h2>
+    <p>
+      DynShift and PhonePad are unregistered trademarks of DynShift. Neither is
+      registered anywhere, and the sites do not pretend otherwise. Product names
+      belonging to other companies (Xbox, Windows, Flutter, React) are their
+      owners' marks and are used only to say what a tool works with.
+    </p>
+
+    <h2>Who</h2>
+    <p>
+      DynShift is run by its founder,
+      <a href="https://github.com/nishanbhuinya" rel="noopener">Nishan Bhuinya</a>,
+      who designs and builds the products, writes the documentation and answers
+      the issues. The studio is on Instagram as
+      <a href={INSTAGRAM} rel="noopener">@dynshift</a>.
+    </p>
+
+    <h2>Money</h2>
+    <p>
+      Nothing DynShift has released so far costs anything, and the free
+      versions are the products, not demos of them. Anyone who found a tool
+      useful can help pay for the time behind it, through
+      <a href="https://github.com/sponsors/MNBLabs" rel="noopener">GitHub Sponsors</a>
+      or <a href="https://ko-fi.com/nishanbhuinya" rel="noopener">Ko-fi</a>.
+      If paid extras ever appear they will be additions, never a tax on what
+      already works.
+    </p>
+    <p>
+      This site itself sets no cookies and runs no analytics. What each product
+      site does is written in its own privacy policy; <a href="/privacy/">this
+      site's</a> is short.
+    </p>
+
+    <h2>Contact</h2>
+    <p>
+      For anything about a specific project, its GitHub repository is the
+      fastest route: bugs as issues, questions and ideas as discussions. For
+      everything else, <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  section {
+    padding-block: clamp(24px, 5vw, 56px);
+  }
+  .lede {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--ink);
+    margin-bottom: 1.6em;
+  }
+</style>

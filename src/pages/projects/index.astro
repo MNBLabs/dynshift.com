@@ -1,0 +1,128 @@
+---
+import Base from "../../layouts/Base.astro";
+import { projects } from "../../data/projects";
+
+/**
+ * The index is a table of contents, not a second home page: one line on
+ * where each project stands, and the two places it can be read about.
+ */
+const status: Record<string, { stage: string; here: string }> = {
+  PhonePad: {
+    stage: "Released. Version 1.0.0, 13 September 2026, for Android and Windows.",
+    here: "/projects/phonepad/",
+  },
+  Layr: {
+    stage: "Released. Version 1.0.2 on npm, December 2025.",
+    here: "/projects/layr/",
+  },
+};
+---
+
+<Base
+  title="Projects"
+  description="Everything DynShift has released: PhonePad, Layr and the Flutter packages, with where each one stands."
+>
+  <section class="wrap prose">
+    <h1>Projects</h1>
+    <p class="lede">
+      Everything that has shipped. Each project has a page here that says what
+      it is for and where it stands, and its own site for using it.
+    </p>
+
+    {
+      projects.map((p) => (
+        <article class="proj">
+          <div class="head">
+            <img src={p.icon} alt="" width="48" height="48" loading="lazy" decoding="async" />
+            <div>
+              <h2>{p.name}</h2>
+              <p class="tag muted">{p.tagline}</p>
+            </div>
+          </div>
+          <p>{p.summary}</p>
+          <p class="stage">{status[p.name]?.stage}</p>
+          <ul class="facts meta" aria-label="Facts">
+            {p.facts.map((f) => (
+              <li>{f}</li>
+            ))}
+          </ul>
+          <p class="go">
+            <a href={status[p.name]?.here}>About {p.name}</a>
+            <a href={p.url}>Product site</a>
+            {p.links.map((l) => (
+              <a href={l.href} rel="noopener">
+                {l.label}
+              </a>
+            ))}
+          </p>
+        </article>
+      ))
+    }
+
+    <article class="proj">
+      <div class="head">
+        <div>
+          <h2>Flutter packages</h2>
+          <p class="tag muted">Four small libraries on pub.dev.</p>
+        </div>
+      </div>
+      <p>
+        mokr, flutter_ui_scaler, figma_design_scale and skip_ink_underline: mock
+        data, design-frame scaling and better underlines for Flutter apps. Each
+        one is described, with what state it is in, on the packages page.
+      </p>
+      <p class="go">
+        <a href="/packages/">About the packages</a>
+      </p>
+    </article>
+  </section>
+</Base>
+
+<style>
+  section {
+    padding-block: clamp(24px, 5vw, 56px);
+  }
+  .lede {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .proj {
+    margin-top: 2.4em;
+    padding-top: 1.6em;
+    border-top: 1px solid var(--line);
+  }
+  .head {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 0.8em;
+  }
+  .head img {
+    border-radius: 12px;
+    flex: none;
+  }
+  .head h2 {
+    margin: 0;
+  }
+  .tag {
+    margin: 2px 0 0;
+  }
+  .stage {
+    color: var(--ink);
+  }
+  .facts {
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1em;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px 14px;
+    color: var(--ink3);
+  }
+  .go {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+  }
+</style>

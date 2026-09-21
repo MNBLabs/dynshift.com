@@ -1,0 +1,136 @@
+---
+import Base from "../layouts/Base.astro";
+import { GITHUB } from "../consts";
+
+/**
+ * The pub.dev packages, each described at the length its README does not
+ * bother with: what problem it was written for, when to reach for it, and
+ * what state it is in. Versions and dates are the ones on pub.dev.
+ */
+const packages = [
+  {
+    name: "mokr",
+    version: "1.0.0",
+    date: "April 2026",
+    url: "https://pub.dev/packages/mokr",
+    repo: `${GITHUB}/mokr`,
+    problem:
+      "Building a feed, a profile or a list screen means looking at it full of something before the real data exists. Lorem ipsum and a grey box tell you nothing about how the layout behaves with a long name, a tall photo or an empty caption.",
+    what:
+      "Realistic mock users, posts and images for Flutter UI work, generated from a seed so the same screen shows the same data on every run and on every developer's machine. Everything is synchronous: no await, no FutureBuilder in the widget tree. Image aspect ratios are known before the image loads, so nothing jumps.",
+    state:
+      "Development only, by design. It refuses to run in a release build, so mock data cannot ship by accident.",
+  },
+  {
+    name: "flutter_ui_scaler",
+    version: "0.1.2",
+    date: "September 2025",
+    url: "https://pub.dev/packages/flutter_ui_scaler",
+    repo: `${GITHUB}/flutter_ui_scaler`,
+    problem:
+      "A design is drawn on one frame, usually a portrait phone. Flutter's MediaQuery does not scale it to other devices in a design-accurate way, and in landscape the naive approach makes titles enormous and spacing inconsistent.",
+    what:
+      "Orientation-aware scaling from a design frame to the device: sx and sy for padding, radii and sizes, sp for text, with clamps so nothing grows or shrinks absurdly. A UiScaleScope at the root sets the frame once, and an optional CLI writes shared defaults to a file so a team scales the same way.",
+    state:
+      "The recommended one of the two scaling packages. It succeeds figma_design_scale and is where improvements go.",
+  },
+  {
+    name: "figma_design_scale",
+    version: "0.1.1",
+    date: "October 2025",
+    url: "https://pub.dev/packages/figma_design_scale",
+    repo: `${GITHUB}/figma_design_scale`,
+    problem: "The same problem as flutter_ui_scaler: keeping a Figma frame's proportions and type sizes stable across devices and rotations.",
+    what:
+      "The original, smaller take on it. Maps the device's shortest side to the design width and its longest side to the design height, takes the smaller of the two ratios so squat screens do not over-expand, and treats fonts gently in portrait and strictly in landscape.",
+    state:
+      "Maintained but superseded. Its own README points at flutter_ui_scaler; new projects should start there.",
+  },
+  {
+    name: "skip_ink_underline",
+    version: "1.0.0",
+    date: "September 2025",
+    url: "https://pub.dev/packages/skip_ink_underline",
+    repo: `${GITHUB}/skip_ink_underline`,
+    problem:
+      "A browser draws an underline that steps over descenders, the tails of g, j, p, q and y, because CSS text-decoration-skip-ink does it. Flutter's underline runs straight through them, which looks cheap next to the rest of a carefully typeset screen.",
+    what:
+      "A drop-in SkipInkText widget that takes the same style as Text and draws an underline that breaks around descenders. The defaults are tuned to look right without configuration; distance, thickness, the gap around each descender and per-letter skip ratios can all be set when they need to be.",
+    state: "Stable. Works on every Flutter platform.",
+  },
+];
+---
+
+<Base
+  title="Packages"
+  description="The DynShift Flutter packages on pub.dev: mokr, flutter_ui_scaler, figma_design_scale and skip_ink_underline. What problem each was written for, when to use it, and what state it is in."
+>
+  <section class="wrap prose">
+    <h1>Packages</h1>
+    <p class="lede">
+      Smaller pieces for Flutter, each written to remove one recurring
+      annoyance from app work and published on pub.dev under the MIT licence.
+    </p>
+    <p>
+      None of them is a framework. Each does one thing, has a README that
+      shows the whole API, and can be dropped without leaving anything behind.
+      The source for all four is on <a href={GITHUB} rel="noopener">GitHub</a>.
+    </p>
+
+    {
+      packages.map((k) => (
+        <article class="pkg">
+          <h2 id={k.name}>
+            <code>{k.name}</code>
+          </h2>
+          <p class="meta muted">
+            {k.version} · {k.date} · MIT · <a href={k.url} rel="noopener">pub.dev</a> ·{" "}
+            <a href={k.repo} rel="noopener">source</a>
+          </p>
+          <h3>The problem</h3>
+          <p>{k.problem}</p>
+          <h3>What it does</h3>
+          <p>{k.what}</p>
+          <h3>State</h3>
+          <p>{k.state}</p>
+        </article>
+      ))
+    }
+  </section>
+</Base>
+
+<style>
+  section {
+    padding-block: clamp(24px, 5vw, 56px);
+  }
+  .lede {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .pkg {
+    margin-top: 2.6em;
+    padding-top: 1.6em;
+    border-top: 1px solid var(--line);
+  }
+  .pkg h2 {
+    margin-top: 0;
+    margin-bottom: 0.2em;
+  }
+  .pkg h2 code {
+    font-family: var(--mono);
+    font-weight: 500;
+    font-size: 0.92em;
+  }
+  .pkg h3 {
+    font-size: 0.8rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin: 1.4em 0 0.3em;
+  }
+  .meta {
+    margin-bottom: 0.4em;
+  }
+</style>

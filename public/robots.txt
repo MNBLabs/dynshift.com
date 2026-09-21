@@ -1,2 +1,4 @@
 User-agent: *
 Allow: /
+
+Sitemap: https://dynshift.com/sitemap-index.xml

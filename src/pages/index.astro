@@ -28,7 +28,10 @@ import { GITHUB, CONTACT } from "../consts";
     <div class="wrap">
       <div class="heading">
         <h2>Projects</h2>
-        <p class="muted">Each one lives on its own site and is maintained there.</p>
+        <p class="muted">
+          Each one lives on its own site and is maintained there.
+          <a href="/projects/">Where each stands</a>.
+        </p>
       </div>
       <div class="tiles">
         {projects.map((p) => <ProjectTile project={p} />)}
@@ -36,7 +39,10 @@ import { GITHUB, CONTACT } from "../consts";
 
       <div class="pkgs">
         <h3>Packages</h3>
-        <p class="muted small">Smaller pieces for Flutter, on pub.dev. All MIT.</p>
+        <p class="muted small">
+          Smaller pieces for Flutter, on pub.dev. All MIT.
+          <a href="/packages/">What each one is for</a>.
+        </p>
         <ul>
           {
             packages.map((k) => (
@@ -66,13 +72,17 @@ import { GITHUB, CONTACT } from "../consts";
         <p>
           Most of the work is open source and published under
           <a href={GITHUB} rel="noopener">MNBLabs</a> on GitHub. DynShift is
-          also home to <a href="https://privogram.com/" rel="noopener">Privogram</a>,
-          a private social app.
+          also home to Privogram, a private social app that has not been
+          released yet.
         </p>
         <p>
           Software is the starting point. The intention is to grow from here
           into games, and further out into hardware. New projects will appear
           on this page as they ship.
+        </p>
+        <p>
+          <a href="/studio/">More about how the studio works</a>, what it
+          publishes under which licence, and who runs it.
         </p>
         <p class="contact">
           <a href={`mailto:${CONTACT}`}>{CONTACT}</a>

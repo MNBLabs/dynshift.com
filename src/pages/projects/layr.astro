@@ -1,0 +1,128 @@
+---
+import Base from "../../layouts/Base.astro";
+
+const SITE = "https://layr.dynshift.com/";
+const NPM = "https://www.npmjs.com/package/@dynshift/layr";
+const REPO = "https://github.com/nishanbhuinya/layr";
+---
+
+<Base
+  title="Layr"
+  description="Layr brings Flutter's layout vocabulary to React: Container, Row, Column, Stack and the rest as type-safe components with no dependencies. What it is for and what it deliberately leaves out."
+>
+  <section class="wrap prose">
+    <p class="meta muted">Project · React + TypeScript · MIT · Version 1.0.2, December 2025</p>
+    <h1>Layr</h1>
+    <p class="lede">
+      Flutter's layout primitives as React components, so a layout reads the
+      way it is drawn.
+    </p>
+    <p class="links">
+      <a class="btn" href={SITE}>layr.dynshift.com</a>
+      <a href={NPM} rel="noopener">@dynshift/layr on npm</a>
+      <a href={REPO} rel="noopener">Source on GitHub</a>
+    </p>
+
+    <h2>Why it exists</h2>
+    <p>
+      React has no layout system of its own. In practice a developer chooses
+      between raw CSS and flexbox, which is powerful but verbose and easy to get
+      subtly wrong; utility class frameworks, which are fast to write and hard
+      to read back; or a full component library, which brings buttons, forms and
+      a theme along with the layout it was wanted for.
+    </p>
+    <p>
+      Flutter took a different path years ago. Its layout is a small set of
+      widgets with deterministic, documented rules: a <code>Container</code>
+      defines bounds and decoration, a <code>Row</code> lays children out
+      horizontally, a <code>Column</code> vertically, a <code>Stack</code>
+      layers them. Anyone who has built a screen in Flutter can look at the
+      widget tree and see the layout. Layr brings exactly that vocabulary to
+      React, with the same names and, wherever React allows it, the same API.
+    </p>
+
+    <h2>What is in it</h2>
+    <p>
+      Layout only. <code>Container</code>, <code>Row</code>, <code>Column</code>,
+      <code>Stack</code>, <code>Positioned</code>, <code>SizedBox</code>,
+      <code>Padding</code> and <code>Centre</code>, plus the alignment and
+      sizing enums Flutter developers already know, such as
+      <code>MainAxisAlignment</code>. There are no buttons, no inputs, no
+      theming system, and nothing that renders visible chrome of its own. The
+      library composes with whatever component set a project already uses.
+    </p>
+    <ul>
+      <li>
+        <strong>No dependencies.</strong> Plain React components, tree-shakeable,
+        so a project ships only the primitives it imports.
+      </li>
+      <li>
+        <strong>TypeScript first.</strong> Every prop is typed; a width given
+        as a string where a number is expected is an editor error, not a
+        runtime surprise.
+      </li>
+      <li>
+        <strong>Predictable.</strong> Each primitive has one job and documented
+        rules for how it sizes itself and its children, mirroring Flutter's
+        layout algorithm rather than reinterpreting it.
+      </li>
+    </ul>
+
+    <h2>Who it is for</h2>
+    <p>
+      Teams that work in both Flutter and React and want one mental model for
+      layout; and React developers who would rather describe a layout as a
+      tree of intentions than as a cascade of properties. It is not a
+      replacement for a design system. It is the layer underneath one.
+    </p>
+
+    <h2>Getting it</h2>
+    <p>
+      Install <code>@dynshift/layr</code> from npm. The
+      <a href={SITE}>Layr site</a> has the documentation, a migration guide for
+      Flutter developers, and a playground where each primitive can be tried
+      with live code. The source, issues and pull requests are on
+      <a href={REPO} rel="noopener">GitHub</a>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  section {
+    padding-block: clamp(24px, 5vw, 56px);
+  }
+  .meta {
+    margin-bottom: 1.2em;
+  }
+  .lede {
+    font-size: 1.15rem;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 14px 24px;
+    margin: 1.4em 0 1em;
+  }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 11px 18px;
+    background: var(--ink);
+    color: var(--ground);
+    border-radius: 999px;
+    font-weight: 500;
+    font-size: 0.95rem;
+    text-decoration: none;
+  }
+  .btn:hover {
+    background: #fff;
+  }
+  code {
+    font-family: var(--mono);
+    font-size: 0.9em;
+    color: var(--ink);
+  }
+</style>
