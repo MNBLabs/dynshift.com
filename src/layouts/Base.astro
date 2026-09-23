@@ -43,6 +43,19 @@ const schema = {
       subdomain. Keep it on every page.
     */}
     <meta name="google-adsense-account" content={`ca-${ADSENSE_PUBLISHER}`} />
+    {/*
+      The AdSense loader, in the head of every page and written here once so
+      it cannot appear twice. Google asks for it in the head; it is also what
+      delivers the consent message shown to visitors in the EEA, the UK and
+      Switzerland, so it is not gated behind a banner of our own — gating it
+      would mean the people the regulation protects never get asked at all.
+      It is a Google-certified consent platform; a hand-rolled banner is not.
+    */}
+    <script
+      is:inline
+      async
+      src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-${ADSENSE_PUBLISHER}`}
+      crossorigin="anonymous"></script>
     <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
     <meta property="og:type" content="website" />

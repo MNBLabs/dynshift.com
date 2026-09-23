@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import AdSlot from "../components/AdSlot.astro";
 import { GITHUB, CONTACT, INSTAGRAM } from "../consts";
 ---
 
@@ -64,6 +65,8 @@ import { GITHUB, CONTACT, INSTAGRAM } from "../consts";
       read by strangers is written more carefully than source that will not.
     </p>
 
+    <AdSlot />
+
     <h2>Open source, and which licence</h2>
     <p>
       Products are published under the <strong>GNU GPL-3.0</strong>. Anyone can
@@ -111,9 +114,11 @@ import { GITHUB, CONTACT, INSTAGRAM } from "../consts";
       already works.
     </p>
     <p>
-      This site itself sets no cookies and runs no analytics. What each product
-      site does is written in its own privacy policy; <a href="/privacy/">this
-      site's</a> is short.
+      This site is also funded by advertising, which is where the rest of the
+      time comes from. It runs no analytics and collects nothing itself; what
+      Google's advertising does collect, and what choices you have about it, is
+      in the <a href="/privacy/">privacy policy</a>. Each product site has its
+      own.
     </p>
 
     <h2>Contact</h2>

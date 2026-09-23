@@ -3,35 +3,87 @@ import Base from "../layouts/Base.astro";
 import { CONTACT } from "../consts";
 ---
 
-<Base title="Privacy" description="What dynshift.com collects: nothing it can avoid. No cookies, no analytics, no advertising on this page.">
+<Base
+  title="Privacy"
+  description="What dynshift.com collects: nothing of its own. What Google's advertising does collect here, what choices you have, and where each product's own policy lives."
+>
   <section class="wrap prose">
     <h1>Privacy</h1>
-    <p class="muted small">Last updated 15 September 2026.</p>
+    <p class="muted small">Last updated 23 September 2026.</p>
 
-    <h2>This website</h2>
+    <h2>What DynShift collects</h2>
     <p>
-      <strong>dynshift.com sets no cookies and runs no analytics.</strong> It
-      is a set of static pages. There is nothing to sign up for, no form to
-      fill in and no script that reports your visit anywhere.
+      <strong>Nothing.</strong> This site has no accounts, no forms, no
+      newsletter and no analytics of any kind. DynShift does not set a cookie
+      here, does not profile you, and does not sell or share anything about
+      you, because it has nothing to sell or share.
     </p>
     <p>
-      The site is hosted on GitHub Pages. As with any web host, GitHub's
-      servers see the request for each page, including your IP address, and
-      handle it under
-      <a href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement" rel="noopener">GitHub's privacy statement</a>.
-      DynShift does not receive or keep those logs.
+      The site is static and hosted on GitHub Pages. As with any web host,
+      GitHub's servers see the request for each page, including your IP
+      address, and handle it under
+      <a
+        href="https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement"
+        rel="noopener">GitHub's privacy statement</a
+      >. DynShift does not receive or keep those logs.
+    </p>
+
+    <h2>Advertising</h2>
+    <p>
+      This site is funded by advertising, and that is the honest reason it is
+      here: the tools DynShift publishes are free, and advertising pays for the
+      time that goes into them.
     </p>
     <p>
-      One tag in each page's head names an advertising account. It is a
-      static site-ownership marker for Google AdSense: it loads nothing,
-      stores nothing and shows nothing. <strong>No advertisements are served
-      on dynshift.com.</strong>
+      The advertising is supplied by <strong>Google AdSense</strong>. Every page
+      loads Google's advertising script; a few long-form pages carry a single
+      advertisement, labelled <em>Advertisement</em> and separated from the text
+      by a rule above and below it. There are none on the home page, none on
+      this page, none in the navigation or the footer, and none placed where a
+      mistimed tap would hit one instead of a link.
     </p>
+    <p>
+      Google, as the provider, may set cookies or read similar identifiers in
+      your browser to serve and measure those advertisements, and in some
+      regions to personalise them. What Google does with that data is described
+      in
+      <a href="https://policies.google.com/technologies/partner-sites" rel="noopener"
+        >how Google uses information from sites that use its services</a
+      > and in
+      <a href="https://policies.google.com/technologies/ads" rel="noopener"
+        >Google's advertising policies</a
+      >. DynShift sees none of it: what reaches the studio is a count of
+      earnings, never a visitor.
+    </p>
+
+    <h2>Your choices</h2>
+    <ul>
+      <li>
+        <strong>In the EEA, the UK and Switzerland</strong>, Google's consent
+        message appears on your first visit and asks before anything is used to
+        personalise advertising. Your answer is recorded and respected. To
+        change it afterwards, use <strong>Privacy settings</strong> in the
+        footer of any page; that control appears only where the message
+        applies.
+      </li>
+      <li>
+        <strong>Anywhere</strong>, you can turn off personalised advertising for
+        your Google account at
+        <a href="https://myadcenter.google.com/" rel="noopener">My Ad Center</a>,
+        and block or delete cookies in your browser's settings. Blocking them
+        does not break this site: it is static pages and text.
+      </li>
+      <li>
+        <strong>If you use an ad blocker</strong>, nothing here will argue with
+        it. There is no wall, no nag, and no counting of who blocks what.
+      </li>
+    </ul>
 
     <h2>Product sites</h2>
     <p>
-      Each DynShift product lives on its own site with its own policy, which
-      is the one that applies there:
+      Each DynShift product lives on its own site with its own policy, which is
+      the one that applies there. The products themselves are not this site:
+      PhonePad, for one, collects nothing at all and talks to no server.
     </p>
     <ul>
       <li><a href="https://phonepad.dynshift.com/privacy/">PhonePad</a></li>
@@ -40,7 +92,8 @@ import { CONTACT } from "../consts";
 
     <h2>Contact</h2>
     <p>
-      Questions about this policy: <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+      Questions about this policy, or about anything held about you:
+      <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
     </p>
   </section>
 </Base>

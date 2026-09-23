@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import AdSlot from "../components/AdSlot.astro";
 import { GITHUB } from "../consts";
 
 /**
@@ -78,7 +79,8 @@ const packages = [
     </p>
 
     {
-      packages.map((k) => (
+      packages.map((k, i) => (
+        <Fragment>
         <article class="pkg">
           <h2 id={k.name}>
             <code>{k.name}</code>
@@ -94,6 +96,8 @@ const packages = [
           <h3>State</h3>
           <p>{k.state}</p>
         </article>
+        {i === 1 && <AdSlot />}
+        </Fragment>
       ))
     }
   </section>

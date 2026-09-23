@@ -16,3 +16,14 @@ export const CONTACT = "official@dynshift.com";
  * they cannot drift apart.
  */
 export const ADSENSE_PUBLISHER = "pub-1564512150436986";
+
+/**
+ * The one ad unit, reused by every slot on the site.
+ *
+ * Empty until a responsive display unit exists in the AdSense account, which
+ * cannot happen before the account is approved. Empty means `AdSlot` renders
+ * nothing: no placeholder, no reserved space. The loader in the page head does
+ * not depend on this — it carries Google's consent message for the EEA, the UK
+ * and Switzerland and must run whether or not a page shows an advertisement.
+ */
+export const ADSENSE_SLOT = "";

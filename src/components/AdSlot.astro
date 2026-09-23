@@ -1,0 +1,79 @@
+---
+/**
+ * One advertising slot.
+ *
+ * Renders **nothing** until an ad unit id is configured, which is the state
+ * the site ships in while the AdSense account is under review. There is no
+ * placeholder and no reserved grey box: a page without a unit is a page with
+ * no advertising furniture on it at all.
+ *
+ * The loader itself is not here. `Base.astro` puts the AdSense script in the
+ * head of every page, once, because Google's consent message for the EEA, the
+ * UK and Switzerland is delivered by that script and has to reach every
+ * visitor, not only the ones who land on a page that carries a slot.
+ *
+ * Where a slot may appear is a decision, not a default. One per page, in the
+ * middle of long-form prose, never on the home page, never in a list of
+ * projects, and never next to a link someone is reaching for.
+ */
+import { ADSENSE_PUBLISHER, ADSENSE_SLOT } from "../consts";
+
+interface Props {
+  /** Defaults to the single configured unit; without one there is nothing to render. */
+  slot?: string;
+}
+const { slot = ADSENSE_SLOT } = Astro.props as Props;
+const show = Boolean(slot);
+---
+
+{
+  show && (
+    <aside class="ad">
+      <span class="ad-label meta">Advertisement</span>
+      <ins
+        class="adsbygoogle"
+        style="display:block"
+        data-ad-client={`ca-${ADSENSE_PUBLISHER}`}
+        data-ad-slot={slot}
+        data-ad-format="auto"
+        data-full-width-responsive="true"
+      />
+      <script is:inline>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+      </script>
+    </aside>
+  )
+}
+
+<style>
+  /* Two hairlines and a label, in the site's own rules and type. Nothing
+     that could be mistaken for a card, a button or a project tile: those
+     are rounded and raised, and this is neither. */
+  .ad {
+    display: block;
+    margin-block: clamp(2.75rem, 7vw, 4.5rem);
+    padding-block: 14px 18px;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    background: none;
+  }
+  .ad-label {
+    display: block;
+    font-size: 0.7rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink3);
+    margin-bottom: 12px;
+  }
+  .adsbygoogle {
+    margin: 0;
+  }
+  /* AdSense marks the ins element "unfilled" when it has no advertisement to
+     return, which happens to every publisher some of the time. Without this
+     the page would keep a labelled empty frame between two rules, which looks
+     like a fault. The rules and the label belong to the advertisement, so
+     they go when it does. */
+  .ad:has(ins[data-ad-status="unfilled"]) {
+    display: none;
+  }
+</style>

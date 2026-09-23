@@ -13,6 +13,13 @@ const year = new Date().getFullYear();
         <a href="/packages/">Packages</a>
         <a href="/studio/">Studio</a>
         <a href="/privacy/">Privacy</a>
+        {/*
+          Reopens Google's consent message so a visitor can change an answer
+          they have already given. It stays hidden unless that message applies
+          to them, which is Google's own documented pattern: showing a control
+          for a choice nobody was asked to make would be theatre.
+        */}
+        <button type="button" id="privacy-settings" hidden>Privacy settings</button>
         <a href={GITHUB} rel="noopener">GitHub</a>
         <a href={INSTAGRAM} rel="noopener">Instagram</a>
         <a href={`mailto:${CONTACT}`}>{CONTACT}</a>
@@ -21,6 +28,26 @@ const year = new Date().getFullYear();
     <p class="legal meta">© {year} DynShift. All rights reserved.</p>
   </div>
 </footer>
+
+<script is:inline>
+  // The queue is answered whenever the consent API arrives, in either order.
+  (function () {
+    var button = document.getElementById("privacy-settings");
+    if (!button) return;
+    button.addEventListener("click", function () {
+      if (window.googlefc && window.googlefc.showRevocationMessage) {
+        window.googlefc.showRevocationMessage();
+      }
+    });
+    window.googlefc = window.googlefc || {};
+    window.googlefc.callbackQueue = window.googlefc.callbackQueue || [];
+    window.googlefc.callbackQueue.push({
+      CONSENT_API_READY: function () {
+        button.hidden = false;
+      },
+    });
+  })();
+</script>
 
 <style>
   .foot {
@@ -45,12 +72,21 @@ const year = new Date().getFullYear();
     flex-wrap: wrap;
     gap: 10px 24px;
   }
-  nav a {
+  nav a,
+  nav button {
     color: var(--ink2);
     text-decoration: none;
     padding-block: 6px;
   }
-  nav a:hover {
+  nav button {
+    font: inherit;
+    background: none;
+    border: 0;
+    padding-inline: 0;
+    cursor: pointer;
+  }
+  nav a:hover,
+  nav button:hover {
     color: var(--ink);
   }
   .legal {
