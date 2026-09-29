@@ -23,15 +23,17 @@ const year = new Date().getFullYear();
       (public/privacy.js). The Do Not Sell or Share link appears only where
       Google reports that a US state regulation applies to the reader.
     */}
-    <nav class="legal-nav meta" aria-label="Legal">
-      <a href="/privacy/">Privacy</a>
-      <a href="/cookies/">Cookies</a>
-      <a href="/terms/">Terms</a>
-      <a href="/contact/">Contact &amp; grievances</a>
-      <button type="button" data-privacy-settings>Privacy settings</button>
-      <a href="/privacy/#your-choices" class="dns" data-dns-link>Do Not Sell or Share My Personal Information</a>
-    </nav>
-    <p class="legal meta">© {year} DynShift. All rights reserved.</p>
+    <div class="base meta">
+      <p class="legal">© {year} DynShift. All rights reserved.</p>
+      <nav class="legal-nav" aria-label="Legal">
+        <a href="/privacy/">Privacy</a>
+        <a href="/cookies/">Cookies</a>
+        <a href="/terms/">Terms</a>
+        <a href="/contact/">Contact</a>
+        <button type="button" data-privacy-settings>Privacy settings</button>
+        <a href="/privacy/#your-choices" class="dns" data-dns-link>Do Not Sell or Share My Personal Information</a>
+      </nav>
+    </div>
   </div>
 </footer>
 
@@ -75,24 +77,34 @@ const year = new Date().getFullYear();
   nav button:hover {
     color: var(--ink);
   }
-  .legal-nav {
+  /* One quiet bottom row that mirrors the top one: the line on the left,
+     the legal links on the right, both in the metadata voice. */
+  .base {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 32px;
     margin-top: 28px;
-    gap: 6px 20px;
+    color: var(--ink3);
+  }
+  .legal {
+    margin: 0;
+    max-width: none;
+  }
+  .legal-nav {
+    gap: 4px 18px;
   }
   .legal-nav a,
   .legal-nav button {
     color: var(--ink3);
+    padding-block: 2px;
   }
   .dns {
     display: none;
   }
   :global(html[data-us-privacy]) .dns {
     display: inline;
-  }
-  .legal {
-    margin: 12px 0 0;
-    max-width: none;
-    color: var(--ink3);
   }
   @media (max-width: 640px) {
     .cols {
@@ -101,6 +113,11 @@ const year = new Date().getFullYear();
     }
     nav {
       gap: 10px 20px;
+    }
+    .base {
+      flex-direction: column-reverse;
+      align-items: flex-start;
+      gap: 14px;
     }
   }
 </style>
