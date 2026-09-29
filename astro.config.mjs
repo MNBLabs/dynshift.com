@@ -11,6 +11,9 @@ export default defineConfig({
   site: "https://dynshift.com",
   trailingSlash: "always",
   build: { format: "directory" },
+  // Astro 7 defaults to JSX-style whitespace, which drops the space between a
+  // line of text and a link that starts the next line. Keep Astro 5's rule.
+  compressHTML: true,
   integrations: [sitemap()],
   // The hero's shaders live in .wgsl files that import one another; the
   // loader resolves that graph at build time. No client framework: the page
