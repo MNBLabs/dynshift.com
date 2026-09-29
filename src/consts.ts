@@ -18,12 +18,23 @@ export const CONTACT = "official@dynshift.com";
 export const ADSENSE_PUBLISHER = "pub-1564512150436986";
 
 /**
- * The one ad unit, reused by every slot on the site.
- *
- * Empty until a responsive display unit exists in the AdSense account, which
- * cannot happen before the account is approved. Empty means `AdSlot` renders
- * nothing: no placeholder, no reserved space. The loader in the page head does
- * not depend on this — it carries Google's consent message for the EEA, the UK
- * and Switzerland and must run whether or not a page shows an advertisement.
+ * The one ad unit ("DynShift root inline", a responsive display unit), reused
+ * by every slot on the site. Empty would mean `AdSlot` renders nothing: no
+ * placeholder, no reserved space. Until the AdSense site is approved Google
+ * returns no ad, and the slot stays collapsed. The loader in the page head
+ * does not depend on this: it carries Google's consent message and must run
+ * whether or not a page shows an advertisement.
  */
-export const ADSENSE_SLOT = "";
+export const ADSENSE_SLOT = "2749664210";
+
+/**
+ * The GA4 measurement id for dynshift.com. Public by design (it is in every
+ * page), so a constant like the publisher id. Empty means no analytics and no
+ * banner. Even when set, nothing loads until the visitor allows it: see
+ * public/privacy.js, the runtime shared by all three DynShift sites.
+ */
+export const GA_ID = "G-VFDZ9S1DQ7";
+
+/** The data controller as named in the policies. Not a registered company (yet). */
+export const CONTROLLER = "DynShift";
+export const POLICY_DATE = "30 September 2026";

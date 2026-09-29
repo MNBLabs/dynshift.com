@@ -2,7 +2,7 @@
 import "../styles/global.css";
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
-import { SITE_NAME, DESCRIPTION, ADSENSE_PUBLISHER, GITHUB } from "../consts";
+import { SITE_NAME, DESCRIPTION, ADSENSE_PUBLISHER, GITHUB, GA_ID } from "../consts";
 
 interface Props {
   title?: string;
@@ -44,12 +44,20 @@ const schema = {
     */}
     <meta name="google-adsense-account" content={`ca-${ADSENSE_PUBLISHER}`} />
     {/*
+      The privacy runtime shared by all three DynShift sites. Synchronous and
+      first, so Consent Mode defaults (denied in the EEA, the UK and
+      Switzerland; personalisation denied under Global Privacy Control) exist
+      before any Google script runs. It also gates analytics behind consent,
+      lazy-loads ad slots and opens "Privacy settings".
+    */}
+    <script is:inline src="/privacy.js" data-ga={GA_ID} data-policy="/privacy/" data-cookies="/cookies/"></script>
+    {/*
       The AdSense loader, in the head of every page and written here once so
       it cannot appear twice. Google asks for it in the head; it is also what
-      delivers the consent message shown to visitors in the EEA, the UK and
-      Switzerland, so it is not gated behind a banner of our own — gating it
-      would mean the people the regulation protects never get asked at all.
-      It is a Google-certified consent platform; a hand-rolled banner is not.
+      delivers Google's consent message (a certified consent platform) to
+      visitors in the EEA, the UK and Switzerland, and the US state opt-out,
+      so it is not gated behind a banner of our own. Auto ads are off in the
+      AdSense account: ads appear only in the placed slots.
     */}
     <script
       is:inline

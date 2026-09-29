@@ -60,6 +60,39 @@
     monospace;
 
   color-scheme: dark;
+
+  /* The shared privacy runtime's banner and panel (public/privacy.js). */
+  --ds-bg: var(--raised-2);
+  --ds-ink: var(--ink);
+  --ds-muted: var(--ink2);
+  --ds-line: var(--line-strong);
+  --ds-radius: var(--r-m);
+}
+
+/* Legal pages: tables for the cookie list and the purposes. */
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0 0 1.4em;
+  font-size: 0.9rem;
+}
+.prose th,
+.prose td {
+  text-align: left;
+  vertical-align: top;
+  padding: 10px 12px 10px 0;
+  border-bottom: 1px solid var(--line);
+  color: var(--ink2);
+}
+.prose th {
+  color: var(--ink);
+  font-weight: 600;
+}
+.prose h3 {
+  margin: 1.6em 0 0.5em;
+}
+.table-scroll {
+  overflow-x: auto;
 }
 
 *,

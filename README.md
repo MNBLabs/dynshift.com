@@ -50,16 +50,36 @@ can drift apart:
 The loader sits in `Base.astro`, in the head of every page and written once.
 It is deliberately not gated behind a banner of our own: it is what delivers
 Google's consent message to visitors in the EEA, the UK and Switzerland, and
-that message is a Google-certified consent platform where a hand-rolled banner
-is not. The footer's **Privacy settings** control reopens it through
-`googlefc.showRevocationMessage()` and stays hidden for everyone the message
-does not apply to.
+the US state opt-out, and Google's message is a certified consent platform.
+Auto ads are off in the AdSense account; ads appear only in placed slots.
 
-`src/components/AdSlot.astro` is the only place ad markup exists. One slot per
-page, mid-prose, on `studio`, `projects/phonepad`, `projects/layr` and
-`packages`. Not on the home page, not on `projects/`, not on `privacy`, and
-never beside a link someone is reaching for. Adding a slot anywhere else is a
-decision to argue for, not a default.
+## Privacy
+
+`public/privacy.js` is the privacy runtime shared, byte for byte, by all three
+DynShift sites; change all three together. It loads first in the head, before
+the AdSense loader, and:
+
+- sets Consent Mode v2 defaults: analytics denied everywhere, advertising
+  denied in the EEA, the UK and Switzerland until Google's message answers,
+  personalisation denied under Global Privacy Control;
+- loads Google Analytics (`GA_ID` in `src/consts.ts`; empty means none) only
+  after consent, and never under GPC;
+- pushes ad slots only when they near the viewport, with restricted data
+  processing under GPC, and never on a legal page;
+- opens the footer's **Privacy settings** panel, and Google's US opt-out from
+  the footer's Do Not Sell or Share link where it applies.
+
+`src/components/AdSlot.astro` is the only place ad markup exists. It takes no
+room and shows no label until Google fills it. One slot per page, mid-prose,
+on `studio`, `projects/phonepad`, `projects/layr` and `packages`. Not on the
+home page, not on `projects/`, never on `privacy`, `cookies`, `terms` or
+`contact` (the component refuses), and never beside a link someone is
+reaching for. Adding a slot anywhere else is a decision to argue for, not a
+default.
+
+The legal pages describe only what the site actually does; the analytics
+paragraphs appear only while `GA_ID` is set. Change them together with the
+code.
 
 ## Fonts
 

@@ -1,0 +1,68 @@
+---
+import Base from "../layouts/Base.astro";
+import { CONTACT, CONTROLLER, POLICY_DATE } from "../consts";
+---
+
+<Base
+  title="Contact and grievances"
+  description="How to reach DynShift, and how privacy requests and grievances are handled, including under India's DPDP Act and IT Rules."
+>
+  <section class="wrap prose">
+    <h1>Contact and grievances</h1>
+    <p class="muted small">Last updated {POLICY_DATE}.</p>
+
+    <h2>Contact</h2>
+    <p>
+      Everything, including privacy: <a href={`mailto:${CONTACT}`}>{CONTACT}</a>.
+      For a bug or a question about a specific project, its GitHub repository
+      is usually faster.
+    </p>
+
+    <h2>Grievance Officer</h2>
+    <p>
+      <strong>Grievance Officer, {CONTROLLER}</strong><br />
+      Email: <a href={`mailto:${CONTACT}?subject=Grievance`}>{CONTACT}</a><br />
+      Based in India.
+    </p>
+    <p>
+      The Grievance Officer handles complaints and requests about personal
+      data on all DynShift sites (dynshift.com, phonepad.dynshift.com and
+      layr.dynshift.com): access, correction, erasure, withdrawal of consent,
+      nomination, and anything else about how your data is handled.
+    </p>
+
+    <h2>How a request is handled</h2>
+    <ol>
+      <li>
+        Write to the address above. Say which site it concerns and what you
+        want done. If it is about analytics, include your Google Analytics
+        client identifier if you have it; nothing else identifies you there.
+      </li>
+      <li>You get an acknowledgement, and a full answer within <strong>30 days</strong>.</li>
+      <li>
+        DynShift may ask for just enough to confirm the request is yours. It
+        will never ask for a password or an identity document for this.
+      </li>
+      <li>
+        If you are not satisfied: in India, you may complain to the Data
+        Protection Board of India after this grievance process; in the EEA, the
+        UK or Switzerland, to your data protection authority.
+      </li>
+    </ol>
+    <p>
+      Requests about Google's advertising data are Google's to answer, through
+      <a href="https://myadcenter.google.com/" rel="noopener">My Ad Center</a> and
+      Google's own privacy tools. DynShift will point you to the right place.
+    </p>
+  </section>
+</Base>
+
+<style>
+  section {
+    padding-block: clamp(24px, 5vw, 56px);
+  }
+  ol li {
+    color: var(--ink2);
+    margin-bottom: 0.5em;
+  }
+</style>

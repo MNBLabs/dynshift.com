@@ -1,0 +1,98 @@
+---
+import Base from "../layouts/Base.astro";
+import { GA_ID, POLICY_DATE } from "../consts";
+const analytics = Boolean(GA_ID);
+---
+
+<Base
+  title="Cookies"
+  description="Every cookie and browser storage key dynshift.com uses, who sets it, why, for how long, and whether it waits for your consent."
+>
+  <section class="wrap prose">
+    <h1>Cookies</h1>
+    <p class="muted small">Last updated {POLICY_DATE}.</p>
+
+    <p>
+      DynShift sets no cookies of its own on this site. It keeps one entry in
+      your browser's local storage to remember your privacy choice. Every
+      cookie below is set by Google, for advertising{analytics ? " or analytics" : ""},
+      and only when the conditions in the last column are met. Change your
+      answer at any time with <strong>Privacy settings</strong> in the footer.
+    </p>
+
+    <div class="table-scroll">
+      <table>
+        <thead>
+          <tr><th>Name</th><th>Set by</th><th>Purpose</th><th>Lasts</th><th>When</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><code>dynshift-consent</code> (local storage)</td>
+            <td>This site</td>
+            <td>Remembers your analytics choice. Never sent to a server.</td>
+            <td>Until cleared; asked again after 12 months</td>
+            <td>When you answer</td>
+          </tr>
+          <tr>
+            <td><code>FCCDCF</code>, <code>FCNEC</code></td>
+            <td>Google (consent message)</td>
+            <td>Store your answer to Google's consent message</td>
+            <td>Up to 13 months</td>
+            <td>EEA, UK and Switzerland, when you answer</td>
+          </tr>
+          <tr>
+            <td><code>__gads</code>, <code>__gpi</code></td>
+            <td>Google AdSense</td>
+            <td>Serve ads, limit how often you see the same one, measure them</td>
+            <td>13 months</td>
+            <td>EEA, UK, Switzerland: only with consent. Elsewhere: when an ad is shown</td>
+          </tr>
+          <tr>
+            <td><code>__eoi</code></td>
+            <td>Google AdSense</td>
+            <td>Security and fraud prevention for ads</td>
+            <td>6 months</td>
+            <td>As above</td>
+          </tr>
+          {analytics && (
+            <tr>
+              <td><code>_ga</code>, <code>_ga_*</code></td>
+              <td>Google Analytics</td>
+              <td>Tell visits apart and keep a session together, to count visits</td>
+              <td>2 years</td>
+              <td>Only after you allow analytics; never under Global Privacy Control</td>
+            </tr>
+          )}
+          <tr>
+            <td>Google's own cookies, such as <code>IDE</code> and <code>NID</code></td>
+            <td>Google, on its own domains</td>
+            <td>Advertising, including personalisation where allowed</td>
+            <td>Up to 13 months</td>
+            <td>
+              Governed by Google; see
+              <a href="https://policies.google.com/technologies/cookies" rel="noopener">Google's cookie list</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h2>Refusing them</h2>
+    <p>
+      Say no in Google's consent message or in this site's
+      {analytics ? " analytics question" : " privacy settings"}, turn on Global
+      Privacy Control in your browser, block third-party cookies, or use an ad
+      blocker. The site works the same in every case. More in the
+      <a href="/privacy/#your-choices">privacy policy</a>.
+    </p>
+  </section>
+</Base>
+
+<style>
+  section {
+    padding-block: clamp(24px, 5vw, 56px);
+  }
+  .prose {
+    max-width: 78ch;
+  }
+</style>
