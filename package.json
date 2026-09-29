@@ -10,12 +10,12 @@
     "poster": "node --experimental-strip-types --import ./tools/register.mjs tools/poster.mjs 1600 900 public/brand/sky.png && magick public/brand/sky.png -quality 82 -strip public/brand/sky.webp && node --experimental-strip-types --import ./tools/register.mjs tools/poster.mjs 900 1600 public/brand/sky-portrait.png --mobile && magick public/brand/sky-portrait.png -quality 82 -strip public/brand/sky-portrait.webp && node tools/clean-posters.mjs"
   },
   "dependencies": {
-    "@astrojs/sitemap": "^3.6.0",
-    "astro": "^5.16.0",
+    "@astrojs/sitemap": "^3.7.4",
+    "astro": "^7.3.5",
     "vgpu": "^0.5.0"
   },
   "devDependencies": {
-    "@astrojs/check": "^0.9.4",
+    "@astrojs/check": "^0.9.10",
     "@webgpu/types": "^0.1.72",
     "pngjs": "^7.0.0",
     "typescript": "^5.9.2"
