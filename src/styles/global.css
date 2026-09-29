@@ -67,6 +67,8 @@
   --ds-muted: var(--ink2);
   --ds-line: var(--line-strong);
   --ds-radius: var(--r-m);
+  --ds-btn-radius: var(--r-s);
+  --ds-font: var(--sans);
 }
 
 /* Legal pages: tables for the cookie list and the purposes. */
