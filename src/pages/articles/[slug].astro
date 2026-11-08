@@ -32,7 +32,7 @@ const image =
     ? typeof a.cover.image === "string"
       ? a.cover.image
       : (await getImage({ src: a.cover.image, width: 1200, height: 630, fit: "cover", format: "jpg", quality: 82 })).src
-    : "/og.png");
+    : "/og.jpg");
 const schema = [
   {
     "@context": "https://schema.org",

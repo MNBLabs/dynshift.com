@@ -2,11 +2,8 @@
 import { GITHUB, INSTAGRAM, CONTACT } from "../consts";
 import Logo from "./Logo.astro";
 import { getArticles } from "../lib/articles";
-import { draftComponent } from "../lib/drafts";
 const year = new Date().getFullYear();
 const hasArticles = (await getArticles()).length > 0;
-// The brand page is a draft until approved: linked on the dev server only.
-const hasBrand = (await draftComponent("brand/Brand.astro")) !== undefined;
 ---
 
 <footer class="foot">
@@ -18,7 +15,7 @@ const hasBrand = (await draftComponent("brand/Brand.astro")) !== undefined;
         <a href="/packages/">Packages</a>
         {hasArticles && <a href="/articles/">Articles</a>}
         <a href="/studio/">Studio</a>
-        {hasBrand && <a href="/brand/">Brand</a>}
+        <a href="/brand/">Brand</a>
         <a href={GITHUB} rel="noopener">GitHub</a>
         <a href={INSTAGRAM} rel="noopener">Instagram</a>
         <a href={`mailto:${CONTACT}`}>{CONTACT}</a>

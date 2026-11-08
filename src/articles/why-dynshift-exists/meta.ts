@@ -8,6 +8,7 @@ export const meta: ArticleMeta = {
   author: { name: "Nishan Bhuinya", url: "https://github.com/nishanbhuinya" },
   coverAlt: "A black hole rendered in grey light against a field of stars: the image on DynShift's home page.",
   cover: { image: "/brand/sky.webp" },
+  og: "/og.jpg",
   published: "2026-11-09",
   weight: 5,
   related: [

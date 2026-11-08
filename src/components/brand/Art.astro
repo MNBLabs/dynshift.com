@@ -1,0 +1,69 @@
+---
+/**
+ * One of the designer's logo files, inline, cropped to its painted bounds
+ * (measured from a 4x render) so it centres and aligns by its artwork, not
+ * by the artboard around it. Visible paint follows `currentColor`; mask
+ * fills stay as they are, since they are geometry. Ids are prefixed so the
+ * same logo can appear many times on one page.
+ */
+import mark from "../../../public/brand/logo/dynshift-mark-white.svg?raw";
+import horizontal from "../../../public/brand/logo/dynshift-logo-horizontal-white.svg?raw";
+import stacked from "../../../public/brand/logo/dynshift-logo-stacked-white.svg?raw";
+import outline from "../../../public/brand/logo/dynshift-stylised-outline-white.svg?raw";
+import solid from "../../../public/brand/logo/dynshift-stylised-solid-white.svg?raw";
+
+export type ArtName = "mark" | "horizontal" | "stacked" | "outline" | "solid";
+
+const art: Record<ArtName, { src: string; box: [number, number, number, number]; label: string }> = {
+  mark: { src: mark, box: [39.75, 2.75, 486.5, 421.75], label: "The DynShift mark" },
+  horizontal: { src: horizontal, box: [16.5, 1, 710.5, 176], label: "DynShift" },
+  stacked: { src: stacked, box: [39.75, 2.75, 487.25, 563.25], label: "DynShift" },
+  outline: { src: outline, box: [16.25, 13, 502.75, 133], label: "DynShift" },
+  solid: { src: solid, box: [16.25, 13, 502.75, 133], label: "DynShift" },
+};
+
+interface Props {
+  name: ArtName;
+  /** Unique on the page. */
+  id: string;
+  /** Paint: currentColor (default) or a gradient for the "don't" examples. */
+  gradient?: boolean;
+  class?: string;
+  /** Hidden from assistive tech when the words around it already say it. */
+  decorative?: boolean;
+}
+const { name, id, gradient = false, class: cls, decorative = false } = Astro.props;
+const { src, box, label } = art[name];
+const paint = gradient ? `url(#${id}-paint)` : "currentColor";
+
+const inner = src
+  .replace(/^[\s\S]*?<svg[^>]*>/, "")
+  .replace(/<\/svg>\s*$/, "")
+  .replace(/ id="([^"]+)"/g, (_, v) => ` id="${id}-${v.replace(/[^\w-]/g, "")}"`)
+  .replace(/url\(#([^)]+)\)/g, (_, v) => `url(#${id}-${v.replace(/[^\w-]/g, "")})`)
+  .replace(/(<(?!mask)[a-z]+[^>]*?)(fill|stroke)="white"/g, `$1$2="${paint}"`);
+
+const defs = gradient
+  ? `<defs><linearGradient id="${id}-paint" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox"><stop offset="0" stop-color="#ff3d9e"/><stop offset="0.55" stop-color="#ff6444"/><stop offset="1" stop-color="#ffc46b"/></linearGradient></defs>`
+  : "";
+---
+
+<svg
+  class:list={["art", cls]}
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={box.join(" ")}
+  fill="none"
+  role={decorative ? undefined : "img"}
+  aria-label={decorative ? undefined : label}
+  aria-hidden={decorative ? "true" : undefined}
+  set:html={defs + inner}
+/>
+
+<style>
+  .art {
+    display: block;
+    width: auto;
+    height: 100%;
+    overflow: visible;
+  }
+</style>
