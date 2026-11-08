@@ -7,13 +7,33 @@ import { SITE_NAME, DESCRIPTION, ADSENSE_PUBLISHER, GITHUB, GA_ID } from "../con
 interface Props {
   title?: string;
   description?: string;
+  /** The social card, a path under /public. Defaults to the site's. */
+  image?: string;
+  /** Open Graph type: "article" for articles, "website" for the rest. */
+  type?: "website" | "article";
+  /** Further JSON-LD for this page, emitted after the Organization. */
+  schema?: Record<string, unknown>[];
+  /** Keep the page out of search indexes (drafts on the dev server). */
+  noindex?: boolean;
+  /** Article dates for Open Graph, ISO. */
+  published?: string;
+  modified?: string;
 }
 
-const { title, description = DESCRIPTION } = Astro.props as Props;
+const {
+  title,
+  description = DESCRIPTION,
+  image = "/og.png",
+  type = "website",
+  schema: extra = [],
+  noindex = false,
+  published,
+  modified,
+} = Astro.props as Props;
 
 const pageTitle = title ? `${title} · ${SITE_NAME}` : `${SITE_NAME}: an independent software studio`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
-const ogImage = new URL("/og.png", Astro.site).href;
+const ogImage = new URL(image, Astro.site).href;
 
 const schema = {
   "@context": "https://schema.org",
@@ -33,8 +53,16 @@ const schema = {
     <title>{pageTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
-    <link rel="icon" href="/favicon.png" type="image/png" sizes="64x64" />
+    {noindex && <meta name="robots" content="noindex" />}
+    {/*
+      Icons, all generated from the supplied mark by tools/icons.mjs. The SVG
+      follows the browser's light or dark chrome; the .ico is the tile for
+      anything that cannot read SVG.
+    */}
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <meta name="theme-color" content="#0d0d0d" />
     <meta name="color-scheme" content="dark" />
     {/*
@@ -66,7 +94,7 @@ const schema = {
       crossorigin="anonymous"></script>
     <link rel="preload" href="/fonts/Geist-Variable.woff2" as="font" type="font/woff2" crossorigin />
     <link rel="sitemap" href="/sitemap-index.xml" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={type} />
     <meta property="og:site_name" content={SITE_NAME} />
     <meta property="og:title" content={pageTitle} />
     <meta property="og:description" content={description} />
@@ -74,8 +102,11 @@ const schema = {
     <meta property="og:image" content={ogImage} />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    {published && <meta property="article:published_time" content={published} />}
+    {modified && <meta property="article:modified_time" content={modified} />}
     <meta name="twitter:card" content="summary_large_image" />
     <script is:inline type="application/ld+json" set:html={JSON.stringify(schema)} />
+    {extra.map((s) => <script is:inline type="application/ld+json" set:html={JSON.stringify(s)} />)}
   </head>
   <body>
     <a class="skip" href="#main">Skip to content</a>

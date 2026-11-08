@@ -1,12 +1,20 @@
 ---
 import Base from "../../layouts/Base.astro";
 import AdSlot from "../../components/AdSlot.astro";
+import { draftComponent } from "../../lib/drafts";
+
+// A revised page awaiting approval, shown only on the dev server.
+const Draft = await draftComponent("projects/LayrPage.astro");
 
 const SITE = "https://layr.dynshift.com/";
 const NPM = "https://www.npmjs.com/package/@dynshift/layr";
 const REPO = "https://github.com/nishanbhuinya/layr";
 ---
 
+{
+  Draft ? (
+    <Draft />
+  ) : (
 <Base
   title="Layr"
   description="Layr brings Flutter's layout vocabulary to React: Container, Row, Column, Stack and the rest as type-safe components with no dependencies. What it is for and what it deliberately leaves out."
@@ -89,6 +97,8 @@ const REPO = "https://github.com/nishanbhuinya/layr";
     </p>
   </section>
 </Base>
+  )
+}
 
 <style>
   section {

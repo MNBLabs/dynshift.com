@@ -2,11 +2,36 @@
 import Base from "../layouts/Base.astro";
 import BlackHole from "../components/BlackHole.astro";
 import ProjectTile from "../components/ProjectTile.astro";
-import { projects, packages } from "../data/projects";
+import HomeArticles from "../components/HomeArticles.astro";
+import { projects as published, packages, type Project } from "../data/projects";
 import { GITHUB, CONTACT } from "../consts";
+import { draftComponent, draftData } from "../lib/drafts";
+
+// Sections awaiting approval. On the dev server they render, marked Draft;
+// a production build gets undefined for each and the page is unchanged.
+const Intro = await draftComponent("home/Intro.astro");
+const Principles = await draftComponent("home/Principles.astro");
+const Faq = await draftComponent("home/Faq.astro");
+const faq = await draftData<{ q: string; a: string }[]>("home/faq.ts", "faq");
+const draftLayr = await draftData<Project>("projects.ts", "layr");
+const projects = draftLayr ? published.map((p) => (p.name === "Layr" ? draftLayr : p)) : published;
+
+const schema = faq
+  ? [
+      {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: faq.map(({ q, a }) => ({
+          "@type": "Question",
+          name: q,
+          acceptedAnswer: { "@type": "Answer", text: a.replace(/<[^>]+>/g, "") },
+        })),
+      },
+    ]
+  : [];
 ---
 
-<Base>
+<Base schema={schema}>
   <section class="hero">
     <BlackHole />
     <div class="wrap">
@@ -23,6 +48,8 @@ import { GITHUB, CONTACT } from "../consts";
       </div>
     </div>
   </section>
+
+  {Intro && <Intro />}
 
   <section id="projects" class="projects">
     <div class="wrap">
@@ -59,6 +86,10 @@ import { GITHUB, CONTACT } from "../consts";
     </div>
   </section>
 
+  {Principles && <Principles />}
+
+  <HomeArticles />
+
   <section id="studio" class="studio">
     <div class="wrap grid">
       <h2>The studio</h2>
@@ -90,6 +121,8 @@ import { GITHUB, CONTACT } from "../consts";
       </div>
     </div>
   </section>
+
+  {Faq && <Faq />}
 </Base>
 
 <style>
@@ -98,8 +131,8 @@ import { GITHUB, CONTACT } from "../consts";
     position: relative;
     isolation: isolate;
     /* The header sits above the sky, so the sky starts under it. */
-    margin-top: -80px;
-    padding-top: 80px;
+    margin-top: calc(-1 * var(--header-h));
+    padding-top: var(--header-h);
     min-height: min(100svh, 880px);
     display: flex;
     align-items: center;

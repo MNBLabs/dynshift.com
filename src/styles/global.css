@@ -42,6 +42,9 @@
   --indigo: #1b1f8f;
   --magenta: #ff009b;
 
+  /* How far the home hero tucks up under the header (Header.astro). */
+  --header-h: 80px;
+
   --page: 1120px;
   --gutter: clamp(20px, 5vw, 48px);
   --measure: 62ch;
@@ -242,6 +245,12 @@ a:hover {
 }
 .prose li {
   margin-bottom: 0.5em;
+}
+
+@media (max-width: 560px) {
+  :root {
+    --header-h: 82px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

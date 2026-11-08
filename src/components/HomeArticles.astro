@@ -1,0 +1,58 @@
+---
+/**
+ * The latest articles on the home page. Renders nothing until an article is
+ * published (or, on the dev server, drafted), so the home page never shows
+ * an empty section.
+ */
+import ArticleCard from "./article/ArticleCard.astro";
+import { getArticles } from "../lib/articles";
+
+const latest = (await getArticles()).slice(0, 3);
+---
+
+{
+  latest.length > 0 && (
+    <section class="articles" aria-labelledby="articles-h">
+      <div class="wrap">
+        <div class="heading">
+          <h2 id="articles-h">Articles</h2>
+          <p class="muted">
+            How the projects work, and what building them taught. <a href="/articles/">All articles</a>.
+          </p>
+        </div>
+        <div class="grid">
+          {latest.map((a) => (
+            <ArticleCard article={a} />
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+<style>
+  .articles {
+    padding-top: clamp(64px, 9vw, 120px);
+  }
+  .heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px 24px;
+    margin-bottom: 28px;
+  }
+  .heading p {
+    margin: 0;
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: clamp(28px, 3vw, 36px);
+  }
+  @media (max-width: 960px) {
+    .grid {
+      grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    }
+  }
+</style>

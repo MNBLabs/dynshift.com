@@ -1,0 +1,52 @@
+---
+/**
+ * Marks unpublished editorial content on the dev server. Production builds
+ * never load a draft, so this never ships; it exists so the owner can see at
+ * a glance, while reviewing, which words are still awaiting approval.
+ */
+interface Props {
+  /** What is in draft, e.g. "FAQ" or "Article". */
+  label?: string;
+  /** "pin" floats in the corner of the viewport; "inline" sits in the flow. */
+  variant?: "pin" | "inline";
+}
+const { label = "Draft", variant = "inline" } = Astro.props;
+---
+
+<span class:list={["draft", variant]} title="Not published: awaiting approval">
+  <span class="dot" aria-hidden="true"></span>{label} · awaiting approval
+</span>
+
+<style>
+  .draft {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 11px 5px 9px;
+    border: 1px dashed rgba(255, 196, 107, 0.55);
+    border-radius: 999px;
+    color: var(--gold);
+    background: rgba(255, 196, 107, 0.06);
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.02em;
+    line-height: 1.2;
+    white-space: nowrap;
+  }
+  .dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+  .pin {
+    position: fixed;
+    left: 16px;
+    bottom: 16px;
+    z-index: 20;
+    background: rgba(13, 13, 13, 0.92);
+  }
+  .inline {
+    margin-bottom: 14px;
+  }
+</style>

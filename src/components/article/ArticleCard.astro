@@ -1,0 +1,111 @@
+---
+/**
+ * One article in a list: cover, title, the dek and the line under it. The
+ * whole card is the link. `feature` lays the first one out large.
+ */
+import Cover from "./Cover.astro";
+import { formatDate, type Article } from "../../lib/articles";
+interface Props {
+  article: Article;
+  feature?: boolean;
+  headingLevel?: 2 | 3;
+}
+const { article: a, feature = false, headingLevel = 3 } = Astro.props;
+const H = headingLevel === 2 ? "h2" : "h3";
+---
+
+<article class:list={["card", { feature }]}>
+  <a class="hit" href={`/articles/${a.slug}/`} aria-label={a.title}></a>
+  <Cover cover={a.cover} alt={a.coverAlt} ratio={feature ? "40 / 21" : "16 / 10"} />
+  <div class="text">
+    <H class="title">{a.title}</H>
+    <p class="dek">{a.dek}</p>
+    <p class="line meta">
+      <span>{a.category}</span>
+      <span>{a.draft ? "Draft" : formatDate(a.published)}</span>
+      <span>{a.minutes} min read</span>
+    </p>
+  </div>
+</article>
+
+<style>
+  .card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .hit {
+    position: absolute;
+    inset: -8px;
+    z-index: 1;
+    border-radius: calc(var(--r-l) + 8px);
+  }
+  .hit:focus-visible {
+    outline-offset: 0;
+  }
+  .card :global(.cover) {
+    transition:
+      border-color var(--beat),
+      transform 600ms var(--ease);
+  }
+  .card:hover :global(.cover) {
+    border-color: var(--line-strong);
+    transform: translateY(-3px);
+  }
+  .title {
+    font-size: 1.3rem;
+    line-height: 1.2;
+    transition: color var(--beat);
+  }
+  .card:hover .title {
+    color: #fff;
+  }
+  .dek {
+    margin: 8px 0 0;
+    color: var(--ink2);
+    font-size: 0.98rem;
+    line-height: 1.55;
+    text-wrap: pretty;
+  }
+  .line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 0;
+    margin: 12px 0 0;
+    color: var(--ink3);
+  }
+  .line span + span::before {
+    content: "·";
+    margin: 0 8px;
+  }
+  .feature {
+    display: grid;
+    grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+    align-items: center;
+    gap: clamp(20px, 4vw, 48px);
+  }
+  .feature .title {
+    font-size: clamp(1.6rem, 3vw, 2.2rem);
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+  }
+  .feature .dek {
+    font-size: 1.06rem;
+    margin-top: 14px;
+  }
+  @media (max-width: 820px) {
+    .feature {
+      display: flex;
+    }
+  }
+  /* On phones the line wraps; a separator would start a line, so spacing does its job. */
+  @media (max-width: 560px) {
+    .line {
+      gap: 4px 14px;
+    }
+    .line span + span::before {
+      content: none;
+    }
+  }
+</style>

@@ -1,0 +1,19 @@
+---
+/**
+ * The owner's review desk for unpublished work: every draft, and the art
+ * alternatives side by side. Built only by the dev server; a production
+ * build has no /review/ page. Its content lives in src/drafts/review/.
+ */
+import Base from "../../layouts/Base.astro";
+import { draftComponent } from "../../lib/drafts";
+
+export function getStaticPaths() {
+  return import.meta.env.DEV ? [{ params: { r: undefined } }] : [];
+}
+
+const Review = await draftComponent("review/Review.astro");
+---
+
+<Base title="Review" description="Drafts awaiting approval." noindex>
+  {Review ? <Review /> : <p class="wrap">No drafts.</p>}
+</Base>

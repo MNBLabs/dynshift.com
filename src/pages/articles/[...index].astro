@@ -1,0 +1,76 @@
+---
+/**
+ * The articles index. A rest route so that it is only built when there is
+ * something to list: with no published article, a production build has no
+ * /articles/ page at all, rather than an empty one.
+ */
+import Base from "../../layouts/Base.astro";
+import ArticleCard from "../../components/article/ArticleCard.astro";
+import { draftComponent } from "../../lib/drafts";
+import { getArticles } from "../../lib/articles";
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  return articles.length > 0 ? [{ params: { index: undefined } }] : [];
+}
+
+// The corner "Draft" marker, dev server only.
+const Pin = await draftComponent("Pin.astro");
+const articles = await getArticles();
+const [first, ...rest] = articles;
+const anyDraft = articles.some((a) => a.draft);
+---
+
+<Base
+  title="Articles"
+  description="Long-form writing from DynShift: how its projects work, why they were built the way they were, and what was learned building them."
+>
+  {anyDraft && Pin && <Pin label="Articles marked Draft" />}
+  <section class="wrap head">
+    <h1>Articles</h1>
+    <p class="lede">
+      How the projects work, why they were built the way they were, and what
+      building them taught, with the measurements and the source to check
+      each claim against.
+    </p>
+  </section>
+
+  <section class="wrap list" aria-label="All articles">
+    {first && <ArticleCard article={first} feature headingLevel={2} />}
+    {
+      rest.length > 0 && (
+        <div class="grid">
+          {rest.map((a) => (
+            <ArticleCard article={a} headingLevel={2} />
+          ))}
+        </div>
+      )
+    }
+  </section>
+</Base>
+
+<style>
+  .head {
+    padding-top: clamp(32px, 6vw, 72px);
+  }
+  .head h1 {
+    font-size: clamp(2.4rem, 5.4vw, 4rem);
+    letter-spacing: -0.035em;
+  }
+  .lede {
+    margin-top: 18px;
+    font-size: clamp(1.06rem, 1.5vw, 1.2rem);
+    line-height: 1.55;
+    color: var(--ink2);
+    max-width: 52ch;
+  }
+  .list {
+    margin-top: clamp(40px, 6vw, 72px);
+  }
+  .grid {
+    margin-top: clamp(48px, 7vw, 80px);
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+    gap: clamp(36px, 5vw, 56px) clamp(24px, 3vw, 40px);
+  }
+</style>

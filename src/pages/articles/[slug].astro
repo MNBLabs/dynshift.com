@@ -1,0 +1,229 @@
+---
+/**
+ * One article. The body is the article's own Body.astro; everything around
+ * it (title block, cover, related pages, the next articles, the structured
+ * data) is the same for every article.
+ */
+import "../../styles/article.css";
+import Base from "../../layouts/Base.astro";
+import Cover from "../../components/article/Cover.astro";
+import ArticleCard from "../../components/article/ArticleCard.astro";
+import { draftComponent } from "../../lib/drafts";
+import { getArticles, formatDate, type Article } from "../../lib/articles";
+import { SITE_NAME } from "../../consts";
+
+export async function getStaticPaths() {
+  const articles = await getArticles();
+  return articles.map((article) => ({ params: { slug: article.slug }, props: { article } }));
+}
+
+// The corner "Draft" marker, dev server only.
+const Pin = await draftComponent("Pin.astro");
+const { article: a } = Astro.props as { article: Article };
+const { default: Body } = await a.load();
+const others = (await getArticles()).filter((o) => o.slug !== a.slug).slice(0, 2);
+
+const url = new URL(`/articles/${a.slug}/`, Astro.site).href;
+const image = a.og ?? ("image" in a.cover ? a.cover.image : "/og.png");
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "BlogPosting",
+    headline: a.title,
+    description: a.dek,
+    url,
+    mainEntityOfPage: url,
+    image: new URL(image, Astro.site).href,
+    datePublished: a.published,
+    dateModified: a.updated ?? a.published,
+    articleSection: a.category,
+    author: { "@type": "Person", name: a.author.name, url: a.author.url },
+    publisher: {
+      "@type": "Organization",
+      name: SITE_NAME,
+      url: Astro.site?.href,
+      logo: { "@type": "ImageObject", url: new URL("/icon-512.png", Astro.site).href },
+    },
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Articles", item: new URL("/articles/", Astro.site).href },
+      { "@type": "ListItem", position: 2, name: a.title, item: url },
+    ],
+  },
+];
+---
+
+<Base
+  title={a.title}
+  description={a.dek}
+  image={image}
+  type="article"
+  schema={schema}
+  noindex={a.draft}
+  published={a.published}
+  modified={a.updated}
+>
+  {a.draft && Pin && <Pin label="Article" />}
+  <article class="article">
+    <header class="wrap a-head">
+      <h1>{a.title}</h1>
+      <p class="dek">{a.dek}</p>
+      <p class="byline meta">
+        <span>By <a href={a.author.url} rel="noopener author">{a.author.name}</a></span>
+        <span>
+          {a.draft ? "Draft, not published" : <time datetime={a.published}>{formatDate(a.published)}</time>}
+        </span>
+        <span>{a.minutes} min read</span>
+        <span><a href="/articles/">{a.category}</a></span>
+      </p>
+    </header>
+
+    <div class="wrap cover-wrap">
+      <Cover cover={a.cover} alt={a.coverAlt} eager />
+    </div>
+
+    <div class="a-body">
+      <Body />
+    </div>
+
+    {a.updated && <p class="wrap updated meta">Revised {formatDate(a.updated)}.</p>}
+
+    <footer class="wrap a-foot">
+      {
+        a.related.length > 0 && (
+          <section class="related" aria-labelledby="related-h">
+            <h2 id="related-h">Read further</h2>
+            <ul>
+              {a.related.map((r) => (
+                <li>
+                  <a href={r.href} rel={r.href.startsWith("http") ? "noopener" : undefined}>
+                    {r.label}
+                  </a>
+                  {r.note && <span>{r.note}</span>}
+                </li>
+              ))}
+            </ul>
+          </section>
+        )
+      }
+      {
+        others.length > 0 && (
+          <section class="more" aria-labelledby="more-h">
+            <h2 id="more-h">More articles</h2>
+            <div class="grid">
+              {others.map((o) => (
+                <ArticleCard article={o} />
+              ))}
+            </div>
+          </section>
+        )
+      }
+    </footer>
+  </article>
+</Base>
+
+<style>
+  .a-head {
+    max-width: min(100% - 2 * var(--gutter), 52rem);
+    padding-top: clamp(32px, 7vw, 88px);
+    text-align: center;
+  }
+  .a-head h1 {
+    font-size: clamp(2.3rem, 5.4vw, 4rem);
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+  }
+  .dek {
+    margin: 22px auto 0;
+    max-width: 44ch;
+    font-size: clamp(1.08rem, 1.6vw, 1.3rem);
+    line-height: 1.5;
+    color: var(--ink2);
+    text-wrap: balance;
+  }
+  .byline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 6px 0;
+    margin: 26px auto 0;
+    max-width: none;
+    color: var(--ink3);
+  }
+  .byline span + span::before {
+    content: "·";
+    margin: 0 10px;
+  }
+  .byline a {
+    color: var(--ink2);
+    text-decoration-color: transparent;
+  }
+  .byline a:hover {
+    color: var(--ink);
+    text-decoration-color: var(--accent);
+  }
+  .cover-wrap {
+    max-width: min(100% - 2 * var(--gutter), 72rem);
+    margin-block: clamp(36px, 6vw, 64px) clamp(40px, 6vw, 72px);
+  }
+  .updated {
+    color: var(--ink3);
+    margin-top: 2em;
+    max-width: min(100% - 2 * var(--gutter), 68ch);
+  }
+  .a-foot {
+    margin-top: clamp(56px, 8vw, 96px);
+  }
+  .related {
+    max-width: 68ch;
+    margin-inline: auto;
+    padding-top: 28px;
+    border-top: 1px solid var(--line);
+  }
+  .related h2,
+  .more h2 {
+    font-size: 1.15rem;
+    letter-spacing: -0.02em;
+    margin-bottom: 14px;
+  }
+  .related ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .related li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 14px;
+    padding: 11px 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .related li a {
+    font-weight: 500;
+  }
+  .related li span {
+    color: var(--ink3);
+    font-size: 0.92rem;
+  }
+  .more {
+    margin-top: clamp(56px, 8vw, 96px);
+  }
+  .more .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr));
+    gap: clamp(28px, 4vw, 40px);
+  }
+  /* On phones the line wraps; a separator would start a line, so spacing does its job. */
+  @media (max-width: 560px) {
+    .byline {
+      gap: 4px 14px;
+    }
+    .byline span + span::before {
+      content: none;
+    }
+  }
+</style>

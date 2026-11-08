@@ -1,0 +1,51 @@
+---
+/**
+ * The stylised DynShift logo (the outlined-delta lettering), drawn from the
+ * designer's own export in brand/source, never redrawn.
+ *
+ * The export is a 530 x 161 artboard; its lettering occupies x 16.4 to 518.9
+ * and y 13 to 146 (measured from a 10x render), so the viewBox crops to that
+ * and the logo aligns to whatever sits beside it, not to empty artboard.
+ * Visible paint follows `currentColor`, so the logo takes the colour of the
+ * text around it. Mask fills keep their original values: they are geometry,
+ * not colour, and recolouring one would make the outline translucent.
+ */
+import source from "../../brand/source/styled-outline-white.svg?raw";
+
+interface Props {
+  /** Rendered height in CSS pixels; the width follows the artboard's ratio. */
+  height?: number;
+  /** Id prefix, so two logos on one page cannot share a mask. */
+  id?: string;
+}
+const { height = 28, id = "logo" } = Astro.props;
+
+const VIEW = { x: 16, y: 13, w: 503, h: 133 };
+const width = Math.round((height * VIEW.w) / VIEW.h);
+
+const inner = source
+  .replace(/^[\s\S]*?<svg[^>]*>/, "")
+  .replace(/<\/svg>\s*$/, "")
+  .replace(/(<(?!mask)[a-z]+\b[^>]*?)(fill|stroke)="white"/g, '$1$2="currentColor"')
+  .replace(/ id="([^"]+)"/g, (_, v) => ` id="${id}-${v.replace(/[^\w-]/g, "")}"`)
+  .replace(/url\(#([^)]+)\)/g, (_, v) => `url(#${id}-${v.replace(/[^\w-]/g, "")})`);
+---
+
+<svg
+  class="logo"
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox={`${VIEW.x} ${VIEW.y} ${VIEW.w} ${VIEW.h}`}
+  width={width}
+  height={height}
+  fill="none"
+  role="img"
+  aria-label="DynShift"
+  set:html={inner}
+/>
+
+<style>
+  .logo {
+    display: block;
+    flex: none;
+  }
+</style>

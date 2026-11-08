@@ -1,13 +1,16 @@
 ---
 import { GITHUB } from "../consts";
 import Wordmark from "./Wordmark.astro";
+import { getArticles } from "../lib/articles";
 
 /* Each entry is a page of its own. The home page also has sections with the
    same names, but the header always goes to the page, so that the site reads
-   as a site and not as one long scroll. */
+   as a site and not as one long scroll. Articles appears once there is one. */
+const hasArticles = (await getArticles()).length > 0;
 const nav = [
   { href: "/projects/", label: "Projects" },
   { href: "/packages/", label: "Packages" },
+  ...(hasArticles ? [{ href: "/articles/", label: "Articles" }] : []),
   { href: "/studio/", label: "Studio" },
 ];
 const path = Astro.url.pathname;
@@ -61,11 +64,21 @@ const path = Astro.url.pathname;
   nav a[aria-current="page"] {
     color: var(--ink);
   }
-  @media (max-width: 480px) {
+  /* Phones: the wordmark on its own line and the links spread across the
+     next, so every link stays in the header at 320 px without crowding. The
+     hero tucks under the header by --header-h (global.css), which follows. */
+  @media (max-width: 560px) {
     .top {
-      padding-block: 18px;
+      padding-block: 16px 8px;
+    }
+    .row {
+      flex-wrap: wrap;
+      gap: 6px 24px;
     }
     nav {
+      width: 100%;
+      justify-content: space-between;
+      gap: 12px;
       font-size: 0.88rem;
     }
   }

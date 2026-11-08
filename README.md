@@ -21,6 +21,33 @@ A push to `main` builds and deploys through `.github/workflows/site.yml`.
 Add an entry to `src/data/projects.ts` and put its icon under
 `public/brand/`. The page has no per-project markup.
 
+## Brand assets
+
+`brand/source/` holds the designer's exports, unmodified: the mark
+(`mark-white.svg`, `mark-black.svg`) and the stylised logo
+(`styled-outline-white.svg`, `styled-outline-black.svg`). Nothing on the site
+redraws them.
+
+- The header is the name set in type (`Wordmark.astro`), with no symbol.
+- The footer draws the stylised logo straight from its export
+  (`Logo.astro`), recoloured to `currentColor` and cropped to its lettering.
+- Every icon (`favicon.svg`, `favicon.ico`, `favicon.png`, `apple-touch-icon.png`,
+  `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`) is generated from the
+  mark by `node tools/icons.mjs`. Run it again if the mark changes.
+
+## Articles and drafts
+
+Articles live in `src/articles/<slug>/` as a `meta.ts` and a `Body.astro`
+(see `src/lib/articles.ts`). `/articles/` and the home page's Articles section
+appear only once one is published.
+
+Unpublished editorial work lives in `src/drafts/`, which git ignores. The dev
+server loads it and marks it "Draft · awaiting approval"; a production build
+never sees it. `/review/` (dev server only) lists every draft. Publishing an
+article is moving its folder from `src/drafts/articles/` to `src/articles/` and
+giving it a `published` date; a draft home section moves into
+`src/components/` and is imported directly.
+
 ## The hero
 
 `src/hero/` is the [vgpu](https://vgpu.sh) "Optimized Black Hole" example,

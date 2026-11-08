@@ -1,12 +1,18 @@
 ---
 import Base from "../../layouts/Base.astro";
-import { projects } from "../../data/projects";
+import { projects as published, type Project } from "../../data/projects";
+import { draftComponent, draftData } from "../../lib/drafts";
 
 /**
  * The index is a table of contents, not a second home page: one line on
  * where each project stands, and the two places it can be read about.
  */
 const status: Record<string, { stage: string; here: string }> = {
+  // Draft: corrected LAYR facts awaiting approval (dev server only).
+  LAYR: {
+    stage: (await draftData<string>("projects.ts", "layrStatus")) ?? "",
+    here: "/projects/layr/",
+  },
   PhonePad: {
     stage: "Released. Version 1.0.0, 13 September 2026, for Android and Windows.",
     here: "/projects/phonepad/",
@@ -16,12 +22,17 @@ const status: Record<string, { stage: string; here: string }> = {
     here: "/projects/layr/",
   },
 };
+// The corner "Draft" marker, dev server only.
+const Pin = await draftComponent("Pin.astro");
+const draftLayr = await draftData<Project>("projects.ts", "layr");
+const projects = draftLayr ? published.map((p) => (p.name === "Layr" ? draftLayr : p)) : published;
 ---
 
 <Base
   title="Projects"
   description="Everything DynShift has released: PhonePad, Layr and the Flutter packages, with where each one stands."
 >
+  {draftLayr && Pin && <Pin label="Revised LAYR entry" />}
   <section class="wrap prose">
     <h1>Projects</h1>
     <p class="lede">

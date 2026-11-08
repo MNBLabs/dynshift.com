@@ -1,0 +1,60 @@
+---
+/**
+ * A figure in an article: a diagram, chart or screenshot with its caption.
+ * `wide` lets it break out of the text column on large screens.
+ */
+interface Props {
+  caption?: string;
+  wide?: boolean;
+  /** Draw the figure on a raised panel (diagrams); off for screenshots. */
+  panel?: boolean;
+  /**
+   * Narrowest the art may be drawn, in CSS px. Below it the figure scrolls
+   * sideways inside its panel instead of shrinking its labels past reading.
+   */
+  minWidth?: number;
+}
+const { caption, wide = false, panel = true, minWidth = panel ? 600 : 0 } = Astro.props;
+---
+
+<figure class:list={["fig", { wide, panel }]}>
+  <div class="art" style={minWidth ? `--fig-min: ${minWidth}px` : undefined} tabindex={minWidth ? 0 : undefined}>
+    <slot />
+  </div>
+  {caption && <figcaption>{caption}</figcaption>}
+  {Astro.slots.has("caption") && <figcaption><slot name="caption" /></figcaption>}
+</figure>
+
+<style>
+  .fig {
+    margin: 2.4em 0;
+  }
+  .art {
+    border-radius: var(--r-l);
+    overflow: hidden;
+  }
+  .panel .art {
+    background: var(--raised);
+    border: 1px solid var(--line);
+    padding: clamp(16px, 3vw, 32px);
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .panel .art :global(svg) {
+    min-width: var(--fig-min, 0);
+  }
+  .art :global(svg),
+  .art :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+  figcaption {
+    margin-top: 12px;
+    color: var(--ink3);
+    font-size: 0.88rem;
+    line-height: 1.5;
+    max-width: 68ch;
+    text-wrap: pretty;
+  }
+</style>

@@ -1,16 +1,19 @@
 ---
 import { GITHUB, INSTAGRAM, CONTACT } from "../consts";
-import Wordmark from "./Wordmark.astro";
+import Logo from "./Logo.astro";
+import { getArticles } from "../lib/articles";
 const year = new Date().getFullYear();
+const hasArticles = (await getArticles()).length > 0;
 ---
 
 <footer class="foot">
   <div class="wrap">
     <div class="cols">
-      <div class="id"><Wordmark size="footer" /></div>
+      <a class="id" href="/" aria-label="DynShift home"><Logo height={26} id="foot-logo" /></a>
       <nav aria-label="Footer">
         <a href="/projects/">Projects</a>
         <a href="/packages/">Packages</a>
+        {hasArticles && <a href="/articles/">Articles</a>}
         <a href="/studio/">Studio</a>
         <a href={GITHUB} rel="noopener">GitHub</a>
         <a href={INSTAGRAM} rel="noopener">Instagram</a>
@@ -51,9 +54,18 @@ const year = new Date().getFullYear();
     justify-content: space-between;
     gap: 20px 32px;
   }
+  /* The stylised logo, in the footer's link colour; it brightens with the
+     links around it. The negative margin lifts the lettering's baseline onto
+     the nav's text baseline, since the y and the f descend below it. */
   .id {
     display: inline-flex;
-    opacity: 0.92;
+    color: var(--ink2);
+    border-radius: var(--r-s);
+    margin-block: -2px 0;
+    transition: color var(--beat);
+  }
+  .id:hover {
+    color: var(--ink);
   }
   nav {
     display: flex;

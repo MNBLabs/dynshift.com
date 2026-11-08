@@ -1,0 +1,56 @@
+---
+/**
+ * An article's cover: inline SVG art (crisp at any size, no request) or an
+ * image. Covers are drawn at the social-card ratio, 40:21; a tighter `ratio`
+ * crops to the middle of the art, where every cover keeps its subject.
+ */
+import type { ArticleMeta } from "../../lib/articles";
+interface Props {
+  cover: ArticleMeta["cover"];
+  alt: string;
+  ratio?: string;
+  eager?: boolean;
+}
+const { cover, alt, ratio = "40 / 21", eager = false } = Astro.props;
+const svg =
+  "svg" in cover
+    ? cover.svg
+        .replace(/<\?xml[^>]*>/, "")
+        .replace(/<svg\b/, `<svg role="img" aria-label="${alt.replace(/"/g, "&quot;")}" preserveAspectRatio="xMidYMid slice"`)
+    : undefined;
+---
+
+<div class="cover" style={`aspect-ratio: ${ratio}`}>
+  {
+    svg ? (
+      <Fragment set:html={svg} />
+    ) : (
+      <img
+        src={"image" in cover ? cover.image : ""}
+        alt={alt}
+        loading={eager ? "eager" : "lazy"}
+        decoding="async"
+        fetchpriority={eager ? "high" : undefined}
+      />
+    )
+  }
+</div>
+
+<style>
+  .cover {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--r-l);
+    background: var(--raised);
+    border: 1px solid var(--line);
+  }
+  .cover :global(svg),
+  .cover img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+</style>

@@ -5,3 +5,6 @@ dist/
 *.log
 .env
 .env.*
+
+# Editorial drafts awaiting approval: local only, loaded by the dev server.
+src/drafts/
