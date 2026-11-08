@@ -34,6 +34,22 @@ redraws them.
 - Every icon (`favicon.svg`, `favicon.ico`, `favicon.png`, `apple-touch-icon.png`,
   `icon-192.png`, `icon-512.png`, `icon-maskable-512.png`) is generated from the
   mark by `node tools/icons.mjs`. Run it again if the mark changes.
+- `/brand/` (`src/components/brand/`) shows every logo from
+  `public/brand/logo/` (the designer's files under plain names) and offers
+  them as SVG, and with PNG in `public/brand/dynshift-logos.zip`.
+- The social cards are `public/og.jpg` (the mark over the name; every page
+  without its own) and `public/og-brand.jpg` (the stylised logo over
+  "Brand"), 1200 x 630, rendered from HTML with the site's fonts and sky.
+
+## Keeping the writing true
+
+Articles, the FAQ and the project pages state facts that will change:
+versions, release dates, download counts, what a tool supports, how it is
+built. When a project changes, search the site for what it says about it
+(`grep -ri phonepad src`, `grep -ri layr src`) and either correct the claim,
+adding an `updated` date to the article's `meta.ts`, or remove the passage,
+or the article, if it no longer holds. An outdated claim is a defect, not
+history.
 
 ## Articles and drafts
 
