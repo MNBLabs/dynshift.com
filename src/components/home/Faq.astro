@@ -1,0 +1,112 @@
+---
+/** DRAFT: questions people actually ask, answered in full. */
+import { faq } from "./faq";
+---
+
+<section class="faq" aria-labelledby="faq-h">
+  <div class="wrap grid">
+    <div>
+      <h2 id="faq-h">Questions</h2>
+      <p class="muted small">
+        Anything else: <a href="mailto:official@dynshift.com">official@dynshift.com</a>.
+      </p>
+    </div>
+    <div class="list">
+      {
+        faq.map((item, i) => (
+          <details open={i === 0}>
+            <summary>
+              <h3>{item.q}</h3>
+              <span class="mark" aria-hidden="true" />
+            </summary>
+            <p set:html={item.a} />
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .faq {
+    padding-top: clamp(64px, 9vw, 120px);
+  }
+  .grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    gap: 20px clamp(32px, 6vw, 96px);
+    align-items: start;
+  }
+  .grid > div:first-child p {
+    margin-top: 12px;
+  }
+  details {
+    border-top: 1px solid var(--line);
+  }
+  details:last-child {
+    border-bottom: 1px solid var(--line);
+  }
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 20px 0;
+    cursor: pointer;
+    list-style: none;
+    border-radius: var(--r-s);
+  }
+  summary::-webkit-details-marker {
+    display: none;
+  }
+  h3 {
+    font-size: 1.08rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+    transition: color var(--beat);
+  }
+  summary:hover h3 {
+    color: #fff;
+  }
+  .mark {
+    position: relative;
+    flex: none;
+    width: 14px;
+    height: 14px;
+  }
+  .mark::before,
+  .mark::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 6px;
+    width: 14px;
+    height: 2px;
+    border-radius: 1px;
+    background: var(--ink3);
+    transition: transform var(--beat);
+  }
+  .mark::after {
+    transform: rotate(90deg);
+  }
+  details[open] .mark::after {
+    transform: rotate(0deg);
+  }
+  details p {
+    margin: -4px 0 22px;
+    color: var(--ink2);
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+  details p :global(code) {
+    font-family: var(--mono);
+    font-size: 0.88em;
+    color: var(--ink);
+  }
+  @media (max-width: 820px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

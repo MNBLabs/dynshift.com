@@ -3,32 +3,24 @@ import Base from "../layouts/Base.astro";
 import BlackHole from "../components/BlackHole.astro";
 import ProjectTile from "../components/ProjectTile.astro";
 import HomeArticles from "../components/HomeArticles.astro";
-import { projects as published, packages, type Project } from "../data/projects";
+import Intro from "../components/home/Intro.astro";
+import Principles from "../components/home/Principles.astro";
+import Faq from "../components/home/Faq.astro";
+import { faq } from "../components/home/faq";
+import { projects, packages } from "../data/projects";
 import { GITHUB, CONTACT } from "../consts";
-import { draftComponent, draftData } from "../lib/drafts";
 
-// Sections awaiting approval. On the dev server they render, marked Draft;
-// a production build gets undefined for each and the page is unchanged.
-const Intro = await draftComponent("home/Intro.astro");
-const Principles = await draftComponent("home/Principles.astro");
-const Faq = await draftComponent("home/Faq.astro");
-const faq = await draftData<{ q: string; a: string }[]>("home/faq.ts", "faq");
-const draftLayr = await draftData<Project>("projects.ts", "layr");
-const projects = draftLayr ? published.map((p) => (p.name === "Layr" ? draftLayr : p)) : published;
-
-const schema = faq
-  ? [
-      {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: faq.map(({ q, a }) => ({
-          "@type": "Question",
-          name: q,
-          acceptedAnswer: { "@type": "Answer", text: a.replace(/<[^>]+>/g, "") },
-        })),
-      },
-    ]
-  : [];
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map(({ q, a }) => ({
+      "@type": "Question",
+      name: q,
+      acceptedAnswer: { "@type": "Answer", text: a.replace(/<[^>]+>/g, "") },
+    })),
+  },
+];
 ---
 
 <Base schema={schema}>
@@ -49,7 +41,7 @@ const schema = faq
     </div>
   </section>
 
-  {Intro && <Intro />}
+  <Intro />
 
   <section id="projects" class="projects">
     <div class="wrap">
@@ -86,7 +78,7 @@ const schema = faq
     </div>
   </section>
 
-  {Principles && <Principles />}
+  <Principles />
 
   <HomeArticles />
 
@@ -122,7 +114,7 @@ const schema = faq
     </div>
   </section>
 
-  {Faq && <Faq />}
+  <Faq />
 </Base>
 
 <style>

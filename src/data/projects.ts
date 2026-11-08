@@ -29,14 +29,17 @@ export const projects: Project[] = [
     links: [{ label: "Source", href: "https://github.com/MNBLabs/phonepad" }],
   },
   {
-    name: "Layr",
-    tagline: "Flutter-inspired layout primitives for React.",
+    name: "LAYR",
+    tagline: "Build websites deterministically.",
     summary:
-      "Container, Row, Column, Stack and the rest of Flutter's layout vocabulary as type-safe React components, so a layout reads the way it is drawn.",
+      "A compiled UI language for the web. You write the page as objects inside objects, in your design's own pixels, and the compiler turns it into static CSS and React components that resolve the same way on every screen.",
     url: "https://layr.dynshift.com/",
     icon: "/brand/layr.png",
-    facts: ["React + TypeScript", "MIT", "npm"],
-    links: [{ label: "Package", href: "https://www.npmjs.com/package/@dynshift/layr" }],
+    facts: ["Web · CSS + React", "MIT", "npm"],
+    links: [
+      { label: "Package", href: "https://www.npmjs.com/package/@dynshift/layr" },
+      { label: "Source", href: "https://github.com/nishanbhuinya/layr" },
+    ],
   },
 ];
 

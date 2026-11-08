@@ -1,30 +1,26 @@
 ---
+/**
+ * LAYR 3, the compiled UI language. The 1.x React component library this
+ * page used to describe is covered under "LAYR 1.x".
+ */
 import Base from "../../layouts/Base.astro";
 import AdSlot from "../../components/AdSlot.astro";
-import { draftComponent } from "../../lib/drafts";
-
-// A revised page awaiting approval, shown only on the dev server.
-const Draft = await draftComponent("projects/LayrPage.astro");
 
 const SITE = "https://layr.dynshift.com/";
 const NPM = "https://www.npmjs.com/package/@dynshift/layr";
 const REPO = "https://github.com/nishanbhuinya/layr";
 ---
 
-{
-  Draft ? (
-    <Draft />
-  ) : (
 <Base
-  title="Layr"
-  description="Layr brings Flutter's layout vocabulary to React: Container, Row, Column, Stack and the rest as type-safe components with no dependencies. What it is for and what it deliberately leaves out."
+  title="LAYR"
+  description="LAYR is a compiled UI language for the web: layout written in your design's own pixels, compiled to static CSS and React. What it is for, what is in it, and how it relates to the 1.x React library."
 >
   <section class="wrap prose">
-    <p class="meta muted">Project · React + TypeScript · MIT · Version 1.0.2, December 2025</p>
-    <h1>Layr</h1>
+    <p class="meta muted">Project · Web, CSS + React · MIT · Version 3.3.0, October 2026</p>
+    <h1>LAYR</h1>
     <p class="lede">
-      Flutter's layout primitives as React components, so a layout reads the
-      way it is drawn.
+      Layout Authoritative Yet Responsive: a compiled language for building
+      websites deterministically, in your design's own numbers.
     </p>
     <p class="links">
       <a class="btn" href={SITE}>layr.dynshift.com</a>
@@ -34,71 +30,104 @@ const REPO = "https://github.com/nishanbhuinya/layr";
 
     <h2>Why it exists</h2>
     <p>
-      React has no layout system of its own. In practice a developer chooses
-      between raw CSS and flexbox, which is powerful but verbose and easy to get
-      subtly wrong; utility class frameworks, which are fast to write and hard
-      to read back; or a full component library, which brings buttons, forms and
-      a theme along with the layout it was wanted for.
+      Building a page from a design is mostly translation. The design says 390
+      pixels wide, a 24-pixel gap, a 16-pixel radius; the code says rems,
+      viewport units, <code>clamp()</code> and media queries, plus a decision at
+      every breakpoint. By the end, the stylesheet no longer looks like the page,
+      and nobody can say exactly why the layout behaves as it does at 700 pixels.
     </p>
     <p>
-      Flutter took a different path years ago. Its layout is a small set of
-      widgets with deterministic, documented rules: a <code>Container</code>
-      defines bounds and decoration, a <code>Row</code> lays children out
-      horizontally, a <code>Column</code> vertically, a <code>Stack</code>
-      layers them. Anyone who has built a screen in Flutter can look at the
-      widget tree and see the layout. Layr brings exactly that vocabulary to
-      React, with the same names and, wherever React allows it, the same API.
+      LAYR makes the layout the program. A <code>.layr</code> file describes what
+      the page is, objects inside objects, so the code has the shape of the
+      result. Numbers are pixels of the design frame. A compiler checks the whole
+      thing before it runs and turns it into static CSS and React components.
     </p>
 
     <h2>What is in it</h2>
-    <p>
-      Layout only. <code>Container</code>, <code>Row</code>, <code>Column</code>,
-      <code>Stack</code>, <code>Positioned</code>, <code>SizedBox</code>,
-      <code>Padding</code> and <code>Centre</code>, plus the alignment and
-      sizing enums Flutter developers already know, such as
-      <code>MainAxisAlignment</code>. There are no buttons, no inputs, no
-      theming system, and nothing that renders visible chrome of its own. The
-      library composes with whatever component set a project already uses.
-    </p>
     <ul>
       <li>
-        <strong>No dependencies.</strong> Plain React components, tree-shakeable,
-        so a project ships only the primitives it imports.
+        <strong>The language.</strong> Pages, widgets, state and functions, with
+        logic kept to clearly marked places so the tree of objects stays readable.
+        One canonical form: <code>layr format</code> writes every file the same way.
       </li>
       <li>
-        <strong>TypeScript first.</strong> Every prop is typed; a width given
-        as a string where a number is expected is an editor error, not a
-        runtime surprise.
+        <strong>Design Scale.</strong> Design frames for phone, tablet, desktop and
+        ultrawide; values scale with the screen inside a frame and are interpolated
+        between frames, all compiled to plain CSS. No media queries to write.
       </li>
       <li>
-        <strong>Predictable.</strong> Each primitive has one job and documented
-        rules for how it sizes itself and its children, mirroring Flutter's
-        layout algorithm rather than reinterpreting it.
+        <strong>Deterministic layout.</strong> Fixed, hug and fill sizing, and a
+        documented order of adaptation when space runs out: shrink, then wrap or
+        stack, and clip only with a warning. <code>layr analyze</code> explains any
+        adaptation.
+      </li>
+      <li>
+        <strong>EIED.</strong> Export, Inject, Extract and Duplicate let any part
+        of an app read, change or copy any object, as ordered, reversible layers
+        the compiler checks. Objects are protected by default, and
+        <code>!mut</code> protects what must never change.
+      </li>
+      <li>
+        <strong>Tooling.</strong> The <code>layr</code> CLI, guided upgrades, a
+        language server and a VS Code extension.
       </li>
     </ul>
 
+    <h2>Built for agents as well as people</h2>
+    <p>
+      LAYR is designed to be written by AI coding agents as well as by people.
+      Where CSS offers many ways to write the same layout, LAYR has one canonical
+      form; layout follows fixed, documented rules instead of being found out in
+      a browser; and every problem is a coded diagnostic that
+      <code>layr analyze --json</code> reports in a form an agent can act on.
+      <code>layr skills install</code> adds the LAYR Skill, generated from the
+      compiler's own schema and matched to the installed version, and an MCP
+      server that can look up widgets, check a snippet and analyse the project.
+    </p>
+
     <AdSlot />
+
+    <h2>How it fits with React</h2>
+    <p>
+      LAYR compiles to React, and works with it in both directions: React packages
+      can be used inside LAYR, even as JSX in the tree, and an existing React app
+      can import <code>.layr</code> files. React is the engine underneath, not the
+      way LAYR is written, so a project can adopt it one page at a time.
+    </p>
 
     <h2>Who it is for</h2>
     <p>
-      Teams that work in both Flutter and React and want one mental model for
-      layout; and React developers who would rather describe a layout as a
-      tree of intentions than as a cascade of properties. It is not a
-      replacement for a design system. It is the layer underneath one.
+      People who build websites from designs and want the design's numbers to be
+      the code's numbers: designers who write their own front ends, developers who
+      work closely with design files, and small teams who would rather read a
+      layout than reverse-engineer one. Flutter developers will recognise the
+      object tree and the hug-and-fill sizing.
+    </p>
+
+    <h2>LAYR 1.x</h2>
+    <p>
+      Until September 2026, <code>@dynshift/layr</code> was a small library of
+      Flutter-style layout components for React (<code>Container</code>,
+      <code>Row</code>, <code>Column</code>, <code>Stack</code> and the rest).
+      LAYR 3.0 replaced it as the default package on 25 September 2026. The 1.x
+      library stays installable as <code>@dynshift/layr@v1</code>, its source is
+      on the repository's <code>v1</code> branch, and the documentation has a
+      guide for migrating.
     </p>
 
     <h2>Getting it</h2>
     <p>
-      Install <code>@dynshift/layr</code> from npm. The
-      <a href={SITE}>Layr site</a> has the documentation, a migration guide for
-      Flutter developers, and a playground where each primitive can be tried
-      with live code. The source, issues and pull requests are on
-      <a href={REPO} rel="noopener">GitHub</a>.
+      The <a href={`${SITE}playground`}>playground</a> runs LAYR in the browser with
+      nothing to install. For a project, install <code>@dynshift/layr</code> from
+      npm and run <code>layr create</code>. The <a href={SITE}>LAYR site</a> has
+      the documentation, the widget reference and the changelog; the source,
+      issues and pull requests are on <a href={REPO} rel="noopener">GitHub</a>.
+      Two articles go further:
+      <a href="/articles/introducing-layr/">Introducing LAYR</a> and
+      <a href="/articles/how-layr-works/">How LAYR works</a>.
     </p>
   </section>
 </Base>
-  )
-}
 
 <style>
   section {

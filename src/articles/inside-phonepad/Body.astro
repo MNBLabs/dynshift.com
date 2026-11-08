@@ -1,0 +1,261 @@
+---
+import Figure from "../../components/article/Figure.astro";
+import Pipeline from "./Pipeline.astro";
+import Packet from "./Packet.astro";
+import StickChart from "./StickChart.astro";
+---
+
+<p>
+  PhonePad makes an Android phone act as an Xbox controller for a Windows PC, over
+  Wi-Fi. Measured on the development hardware, a thumb movement on the phone
+  reaches the PC and is acknowledged back in 4.9 to 8.0 milliseconds, typically
+  about five, at a steady 249 packets a second with no loss across 42,805
+  consecutive packets. This article is about how that path is built: what runs
+  where, why each piece was chosen over its alternatives, and the measurements
+  that changed the design along the way.
+</p>
+<p>
+  If you want to know what PhonePad is before how it works,
+  <a href="/articles/introducing-phonepad/">Introducing PhonePad</a> is the
+  better place to start.
+</p>
+
+<h2>The path</h2>
+<p>
+  Every input travels the same short route. On the phone, raw touch events go to
+  a router that works out which control each finger is on, the router updates a
+  plain controller state, and the state is sent as one UDP datagram. On the PC,
+  the companion receives it, verifies it and writes it to a virtual Xbox 360
+  controller, where games read it through XInput like any other pad.
+</p>
+
+<Figure caption="The hot path. Nothing in it waits on a user interface: on the phone, touch never rebuilds a widget; on the PC, the window only reads shared state and could freeze without stopping the controller." wide>
+  <Pipeline />
+</Figure>
+
+<h2>How Windows sees a controller</h2>
+<p>
+  The first decision was the one everything else depends on: how a program
+  creates a controller that Windows, and every game, will accept as real. There
+  were four candidates.
+</p>
+<div class="table-scroll">
+  <table>
+    <thead>
+      <tr><th>Option</th><th>Why it was or was not used</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Virtual HID Framework</td>
+        <td>Microsoft's documented route, but it means writing a kernel driver and either an EV-signed submission or putting the PC into test-signing mode. Not something to ask of someone who wants to play a game today.</td>
+      </tr>
+      <tr>
+        <td>GameInput</td>
+        <td>An API for reading devices. It offers no supported way to publish a virtual one.</td>
+      </tr>
+      <tr>
+        <td>vJoy</td>
+        <td>Presents a DirectInput-only device. Xbox Cloud Gaming and most modern games read XInput or the browser's Gamepad API, so it would be invisible to them.</td>
+      </tr>
+      <tr>
+        <td><strong>ViGEmBus</strong></td>
+        <td>Chosen. It creates a real Xbox 360 device node without driver signing, visible at once to <code>joy.cpl</code>, XInput, DirectInput, GameInput and the Gamepad API.</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<p>
+  ViGEmBus has a real weakness: its author archived it in November 2023 and its
+  last release is final. That risk is written down rather than hidden, and the
+  design contains it. The rest of the companion talks to a
+  <code>VirtualPad</code> interface, so moving to a successor driver touches one
+  file. It is also the mechanism Parsec and DS4Windows ship with, which says
+  something about how dependable it has been in practice.
+</p>
+<p>
+  The choice was verified rather than assumed. A small probe program plugs in a
+  virtual pad, writes known states to it, and reads them back through Windows'
+  own XInput API. All 26 checks passed (15 buttons, 5 trigger levels and 6 stick
+  positions) and a write became visible to XInput in 0.09 milliseconds on
+  average. The virtual pad costs essentially nothing. One oddity surfaced along
+  the way: the public <code>XInputGetState</code> call hides the Guide button,
+  and only an undocumented sibling reports it, so the probe looks that function
+  up at run time in order to test Guide honestly.
+</p>
+
+<h2>Forty bytes over UDP</h2>
+<p>
+  Input is sent as fixed-layout binary packets: no JSON, no variable-length
+  fields, every integer little-endian. A full controller state fits in 40 bytes,
+  so even at the 250-a-second ceiling the stream is about ten kilobytes a second.
+</p>
+
+<Figure caption="The INPUT packet. The button field is bit-for-bit XInput's own wButtons, so the PC copies it straight through without translating. The last eight bytes authenticate the first 32." wide>
+  <Packet />
+</Figure>
+
+<p>
+  The transport is UDP, not TCP, and that is a deliberate choice about which
+  failure is worse. TCP guarantees delivery by resending, and holds back
+  everything after a lost packet until the resend arrives. For a controller, a
+  resent input is a <em>stale</em> input: by the time it lands, the thumb has
+  moved on. So PhonePad never resends. It sends the full state whenever it
+  changes, and repeats it at 120 Hz even when it has not. A lost packet is
+  corrected by the next one, within about eight milliseconds, and nothing
+  waits for anything.
+</p>
+
+<h2>Security on a shared network</h2>
+<p>
+  An unauthenticated socket that injects controller input is a genuine hazard on
+  a shared network, so no input is accepted from anything that has not paired.
+  Pairing is an X25519 key exchange, confirmed by the six-digit code the companion
+  displays, and it leaves both sides holding a shared key. Every input packet then
+  carries the first eight bytes of an HMAC-SHA256 over its contents, and a sequence
+  number checked against a 64-entry sliding window, so packets can be neither
+  forged nor replayed. Input and control messages have separate sequence
+  counters, so neither stream can disturb the other's replay protection.
+</p>
+<p>
+  Rejected packets are counted by reason and shown in the companion's
+  diagnostics. They are never dropped silently, because a silent drop is
+  indistinguishable from a network problem when someone is trying to work out
+  why their controller is not responding.
+</p>
+
+<h2>The phone side</h2>
+<p>
+  The app's interface is written in Flutter, and the obvious design would have
+  moved the sending into native Android code. It was considered and rejected:
+  routing every packet across the Flutter-to-Kotlin bridge adds a hop and an
+  allocation to the hot path rather than removing one. Instead, raw pointer
+  events feed a controller engine written in plain Dart, and the engine sends
+  the datagram itself, from the same isolate, with one system call. The controller
+  surface is drawn by a single custom painter behind a repaint boundary, so a
+  touch never causes a widget rebuild or a layout pass.
+</p>
+<p>
+  Kotlin is used only for what Dart cannot reach: asking for the display's
+  120 Hz mode, holding Android's low-latency Wi-Fi lock, excluding the screen
+  edges from the system's back gesture so it cannot fire mid-game, the vibration
+  motor, reading the Wi-Fi link to compute the subnet's broadcast address for
+  discovery, and a foreground service so the system cannot suspend an active
+  session.
+</p>
+<p>
+  One rule in the touch code is worth singling out. The router never toggles a
+  button on or off in response to a single event. On every event it rebuilds the
+  whole controller state from the set of fingers currently on the glass. That
+  makes a stuck button structurally impossible rather than merely unlikely.
+</p>
+
+<h2>Failing safe</h2>
+<p>
+  The worst thing a controller can do is keep a button held after the
+  connection dies: a car accelerating into a wall, a character running off a
+  ledge. The companion therefore runs a watchdog. If no valid packet arrives for
+  120 milliseconds, every control is released to neutral; after two seconds, the
+  session is dropped and the phone must reconnect. When the companion exits, the
+  virtual pad is unplugged.
+</p>
+<p>
+  This was tested the hard way. A button was held on the phone and the app was
+  force-stopped mid-press. The companion logged the stall at 131 milliseconds,
+  and Windows saw exactly three states: neutral, the button, neutral. The
+  11-millisecond overshoot is one pass of the receive loop, which is expected
+  and bounded.
+</p>
+
+<h2>What measuring changed</h2>
+<p>
+  Several of PhonePad's design decisions came from measurements that
+  contradicted an assumption. Three are worth retelling.
+</p>
+
+<h3>65 Hz instead of 250</h3>
+<p>
+  The first test sender, asked for 250 packets a second, managed 65. The
+  protocol was not at fault. Windows rounds socket read timeouts up to its
+  scheduler tick of about 15.6 milliseconds, so a "1 millisecond" timeout
+  actually cost 15, and capped the loop. Sleeping is quantised the same way. The
+  sender was rebuilt around a non-blocking socket and produced an exact 250 Hz.
+  The lesson generalises: on Windows, any pacing built on sleeping is coarse.
+</p>
+
+<h3>A rate that read too high</h3>
+<p>
+  At one point the phone's own panel reported sending 312 packets a second while
+  the PC reported accepting 259. It looked like loss. It was a measurement bug:
+  each side published its count when "more than a second" had passed, but only
+  checked on a periodic tick, so the real window was up to 25% longer than the
+  second it was divided by. Both sides now divide by the time that actually
+  elapsed, and both read 249. The documentation that had quoted the inflated
+  figure was corrected in place, with the explanation left next to it.
+</p>
+
+<h3>Two deadzones</h3>
+<p>
+  The most noticeable improvement came from a complaint about feel: nothing at
+  the start of the stick's travel, then suddenly too much. The cause was two
+  deadzones stacked on each other. Games apply their own, typically 15 to 25% of
+  the range, because they assume a physical stick with slop and drift to hide.
+  PhonePad was applying 12% of its own before the game ever saw the value.
+</p>
+
+<Figure caption="What the game receives for a given thumb travel, before and after the rebuild, with a typical game deadzone of 0.15 applied. Before, the first quarter of the travel produced nothing at all. Hover a point for its value." wide>
+  <StickChart />
+</Figure>
+
+<div class="table-scroll">
+  <table>
+    <thead>
+      <tr><th class="n">Thumb travel</th><th class="n">Game input, before</th><th class="n">Game input, after</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="n">5%</td><td class="n">0.0%</td><td class="n">1.2%</td></tr>
+      <tr><td class="n">10%</td><td class="n">0.0%</td><td class="n">4.3%</td></tr>
+      <tr><td class="n">15%</td><td class="n">0.0%</td><td class="n">8.1%</td></tr>
+      <tr><td class="n">20%</td><td class="n">0.0%</td><td class="n">12.3%</td></tr>
+      <tr><td class="n">25%</td><td class="n">0.0%</td><td class="n">17.0%</td></tr>
+      <tr><td class="n">30%</td><td class="n">6.4%</td><td class="n">21.9%</td></tr>
+      <tr><td class="n">50%</td><td class="n">33.2%</td><td class="n">44.2%</td></tr>
+      <tr><td class="n">75%</td><td class="n">66.6%</td><td class="n">76.2%</td></tr>
+      <tr><td class="n">100%</td><td class="n">100%</td><td class="n">100%</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<p>
+  A thumb on glass does not glide; it sticks and then breaks free in a jump of two
+  or three millimetres, around 12% of the stick's travel. Arriving just as the
+  response finally began, that jump delivered about 16% of the game's input at
+  once, which is exactly "nothing, then too much". The fix inverts the old
+  behaviour: as soon as the thumb leaves the centre, PhonePad's output starts
+  just past the game's own dead band, so what the player feels starts from zero
+  and climbs smoothly. One subtlety had to be protected with a test: an exactly
+  centred stick must still send exactly zero, or every game would read the pad
+  as permanently pushed.
+</p>
+
+<h2>What has not been measured</h2>
+<p>
+  The project keeps a list of what it does not know yet, instead of filling the
+  gaps with estimates: battery drain over a long session, CPU use on either side,
+  the phone's frame rate under heavy touch, behaviour on a congested or weak
+  network, and the noise from a real finger held still. The round-trip figure is
+  also explicit about its scope. It covers phone to PC, validation, the virtual
+  pad and back, but not the touchscreen's own sampling delay or the display at
+  the other end, which the software cannot observe.
+</p>
+
+<h2>Building on it</h2>
+<p>
+  The wire protocol lives in its own folder of the repository, licensed under
+  Apache-2.0 rather than the GPL that covers the app and companion, with a shared
+  fixture file that both implementations are tested against. That is an
+  invitation: a compatible client for another platform, or a companion for
+  another operating system, can be written against the documented format without
+  inheriting the GPL. The full reasoning behind every choice above is in the
+  architecture decision record, and the raw measurements, with the commands to
+  reproduce them, are in the benchmarks document.
+</p>

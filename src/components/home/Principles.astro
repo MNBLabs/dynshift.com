@@ -1,0 +1,81 @@
+---
+/** DRAFT: how the work is done, each principle with the evidence for it. */
+
+const items = [
+  {
+    t: "Finished, then shipped",
+    p: "One project at a time, released when it does the whole job it set out to do. PhonePad's first release carried game rumble all the way to the phone's motor, because a controller that cannot rumble is not quite a controller.",
+    link: { href: "/studio/", label: "How the studio works" },
+  },
+  {
+    t: "Measured, not assumed",
+    p: "Every performance figure comes from a recorded run, with the method beside it, and what has not been measured is listed as such. PhonePad's round trip is 4.9 to 8.0 ms on the hardware it was measured on, and a dropped connection releases every control within 131 ms.",
+    link: { href: "/articles/inside-phonepad/", label: "Inside PhonePad" },
+  },
+  {
+    t: "Written to be read",
+    p: "Comments explain why, and the failure behind a piece of code is recorded in it. LAYR compiles every example in its documentation in continuous integration, so the docs cannot drift from the language.",
+    link: { href: "/articles/how-layr-works/", label: "How LAYR works" },
+  },
+  {
+    t: "No accounts, no telemetry",
+    p: "PhonePad has no account, no server and no telemetry: the phone talks to your PC and to nothing else. LAYR builds sites as static files you can host anywhere.",
+    link: { href: "/projects/phonepad/", label: "About PhonePad" },
+  },
+];
+---
+
+<section class="principles" aria-labelledby="principles-h">
+  <div class="wrap">
+    <h2 id="principles-h">How the work is done</h2>
+    <div class="list">
+      {
+        items.map((it) => (
+          <div class="item">
+            <h3>{it.t}</h3>
+            <p>{it.p}</p>
+            <a href={it.link.href}>{it.link.label}</a>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<style>
+  .principles {
+    padding-top: clamp(64px, 9vw, 120px);
+  }
+  h2 {
+    margin-bottom: clamp(24px, 4vw, 40px);
+  }
+  .list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0 clamp(32px, 5vw, 72px);
+  }
+  .item {
+    padding: 26px 0 30px;
+    border-top: 1px solid var(--line);
+  }
+  h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
+  p {
+    color: var(--ink2);
+    font-size: 1rem;
+    max-width: 52ch;
+    text-wrap: pretty;
+    margin-bottom: 14px;
+  }
+  .item a {
+    font-weight: 500;
+    font-size: 0.94rem;
+  }
+  @media (max-width: 760px) {
+    .list {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

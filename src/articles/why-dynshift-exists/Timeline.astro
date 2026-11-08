@@ -1,0 +1,95 @@
+---
+/**
+ * Everything DynShift has released, by first public release date: pub.dev's
+ * and npm's own publish times, and PhonePad's GitHub release.
+ */
+/* Labels close to a neighbour lean away from it (anchor). */
+const items: { d: string; t: string; s: string; alt?: boolean; hi?: boolean; anchor?: "start" | "end" }[] = [
+  { d: "2025-09-28", t: "figma_design_scale", s: "pub.dev" },
+  { d: "2025-09-30", t: "skip_ink_underline", s: "pub.dev", alt: true },
+  { d: "2025-12-22", t: "LAYR 1.0", s: "npm" },
+  { d: "2026-04-05", t: "mokr", s: "pub.dev" },
+  { d: "2026-09-13", t: "PhonePad 1.0", s: "Android + Windows", hi: true, anchor: "end" },
+  { d: "2026-09-25", t: "LAYR 3.0", s: "npm", hi: true, alt: true },
+  { d: "2026-10-23", t: "LAYR 3.3", s: "npm", anchor: "start" },
+];
+const start = Date.parse("2025-09-01");
+const end = Date.parse("2026-11-30");
+const L = 30;
+const R = 870;
+const x = (d: string) => L + ((Date.parse(d) - start) / (end - start)) * (R - L);
+const months = ["2025-10-01", "2026-01-01", "2026-04-01", "2026-07-01", "2026-10-01"];
+const label = (d: string) =>
+  new Date(`${d}T00:00:00Z`).toLocaleDateString("en-GB", { month: "short", year: "numeric", timeZone: "UTC" });
+---
+
+<svg viewBox="0 0 900 230" role="img" aria-labelledby="ds-tl-t">
+  <title id="ds-tl-t">
+    Releases from September 2025 to October 2026: the first Flutter packages, figma_design_scale and
+    skip_ink_underline, in late September 2025; LAYR 1.0 in December 2025; mokr in April 2026; PhonePad 1.0 on 13 September 2026; LAYR 3.0
+    on 25 September 2026; LAYR 3.3 on 23 October 2026.
+  </title>
+  <line x1={L} x2={R} y1={120} y2={120} class="axis" />
+  {
+    months.map((m) => (
+      <g>
+        <line x1={x(m)} x2={x(m)} y1={124} y2={130} class="tick" />
+        <text x={x(m)} y={148} class="m">{label(m)}</text>
+      </g>
+    ))
+  }
+  {
+    items.map((it) => {
+      const up = !it.alt;
+      const cx = x(it.d);
+      const tx = it.anchor === "end" ? cx + 6 : it.anchor === "start" ? cx - 6 : cx;
+      return (
+        <g>
+          <line x1={cx} x2={cx} y1={up ? 70 : 170} y2={120} class="stem" />
+          <circle cx={cx} cy={120} r={it.hi ? 6 : 4.5} class:list={["dot", { hi: it.hi }]} />
+          <text x={tx} y={up ? 46 : 192} style={`text-anchor: ${it.anchor ?? "middle"}`} class:list={["t", { hi: it.hi }]}>{it.t}</text>
+          <text x={tx} y={up ? 63 : 209} style={`text-anchor: ${it.anchor ?? "middle"}`} class="s">{it.s}</text>
+        </g>
+      );
+    })
+  }
+</svg>
+
+<style>
+  svg {
+    font-family: var(--sans);
+  }
+  .axis {
+    stroke: var(--line-strong);
+  }
+  .tick,
+  .stem {
+    stroke: var(--line-strong);
+  }
+  .m {
+    text-anchor: middle;
+    fill: var(--ink3);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+  .dot {
+    fill: var(--ink2);
+    stroke: var(--raised);
+    stroke-width: 2;
+  }
+  .dot.hi {
+    fill: var(--ink);
+  }
+  .t {
+    fill: var(--ink2);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .t.hi {
+    fill: var(--ink);
+  }
+  .s {
+    fill: var(--ink3);
+    font-size: 11.5px;
+  }
+</style>

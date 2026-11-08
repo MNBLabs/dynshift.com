@@ -2,19 +2,12 @@
 import Base from "../layouts/Base.astro";
 import AdSlot from "../components/AdSlot.astro";
 import { GITHUB, CONTACT, INSTAGRAM } from "../consts";
-import { draftComponent, draftData } from "../lib/drafts";
-
-// Draft: LAYR is now a compiled language, not a React library (dev server only).
-// The corner "Draft" marker, dev server only.
-const Pin = await draftComponent("Pin.astro");
-const layr3 = (await draftData<string>("projects.ts", "layrStatus")) !== undefined;
 ---
 
 <Base
   title="The studio"
   description="What DynShift is, how it decides a tool is finished, what it publishes under which licence, who runs it and how to reach it."
 >
-  {layr3 && Pin && <Pin label="LAYR wording" />}
   <section class="wrap prose">
     <h1>The studio</h1>
     <p class="lede">
@@ -28,17 +21,7 @@ const layr3 = (await draftData<string>("projects.ts", "layrStatus")) !== undefin
       Two kinds of thing so far. <strong>Products</strong> that a person installs
       and uses, of which <a href="/projects/phonepad/">PhonePad</a> is the first
       to reach a public release. And <strong>developer libraries</strong>:
-      {
-        layr3 ? (
-          <Fragment>
-            <a href="/projects/layr/">LAYR</a>, a compiled language for web layout,
-          </Fragment>
-        ) : (
-          <Fragment>
-            <a href="/projects/layr/">Layr</a> for React,
-          </Fragment>
-        )
-      }
+      <a href="/projects/layr/">LAYR</a>, a compiled language for web layout,
       and a set of
       <a href="/packages/">Flutter packages</a> on pub.dev, each solving one
       problem that came up while building apps.
@@ -95,7 +78,7 @@ const layr3 = (await draftData<string>("projects.ts", "layrStatus")) !== undefin
     <p>
       Libraries are published under the <strong>MIT licence</strong>, because a
       library is only useful if it can be used inside anything, including closed
-      software. {layr3 ? "LAYR" : "Layr"} and all four Flutter packages are MIT.
+      software. LAYR and all four Flutter packages are MIT.
     </p>
     <p>
       Public code lives under <a href={GITHUB} rel="noopener">MNBLabs</a> on

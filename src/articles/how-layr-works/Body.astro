@@ -1,0 +1,272 @@
+---
+import CodeBlock from "../../components/article/CodeBlock.astro";
+import Figure from "../../components/article/Figure.astro";
+import Pipeline from "./Pipeline.astro";
+import ScaleChart from "./ScaleChart.astro";
+import Cascade from "./Cascade.astro";
+
+const css = `/* Simplified from the generated stylesheet: the default frames, lengths only. */
+:root { --ds: clamp(56.25rem, 1000 * 100vmin / 390, 71.875rem); }
+@media (min-width: 600px)  { :root { --ds: clamp(56.25rem, 1000 * 100vmin / 834, 71.875rem); } }
+@media (min-width: 1024px) { :root { --ds: clamp(56.25rem, 1000 * 100vw / 1440, 71.875rem); } }
+
+/* w: 240 */
+width: calc(240 * var(--ds) / 1000);`;
+
+const paths = `SomePage.card                             // the object with .id(card)
+DemoPage.scaffold.body.mid.column.text(1) // the second Text in that Column
+Room.scaffold.body.column.booking(1).text(0)  // inside one widget instance only`;
+---
+
+<p>
+  <a href="/articles/introducing-layr/">Introducing LAYR</a> describes what LAYR is
+  for: a language in which the shape of the code is the shape of the page, the
+  numbers are the design's numbers, and layout follows fixed rules. This article
+  is about the machinery that makes those promises hold. It covers the compiler,
+  Design Scale, the layout rules, and the system of ordered changes LAYR calls
+  EIED. All of it is open source, and the file names below are the real ones.
+</p>
+
+<h2>From a file to a page</h2>
+<p>
+  LAYR is compiler-first. A project's <code>.layr</code> files and its
+  <code>layr.yaml</code> go through five stages, and what comes out is ordinary
+  web output: one JavaScript module and one stylesheet per source file, plus a
+  global stylesheet with the base layout rules and the Design Scale variables.
+</p>
+
+<Figure caption="The compiler's stages. Every stage reports problems as diagnostics with a code (L1011, L3102 and so on), many with an automatic fix, and the same diagnostics drive the CLI, the editor and the AI tooling." wide>
+  <Pipeline />
+</Figure>
+
+<p>
+  The parser is written by hand and returns a syntax tree together with a list of
+  diagnostics, rather than giving up at the first mistake. That matters because
+  the same compiler runs inside the editor, where code is half-typed most of the
+  time. Analysis then works across the whole project: it resolves names, checks
+  types, and builds a graph of every Export, Extract, Inject and Duplicate, so it
+  knows which objects each part of the app reads and changes before anything
+  runs.
+</p>
+<p>
+  <strong>Lowering</strong> is the step that turns a widget and its resolved
+  configuration into CSS classes, declarations and element attributes. The same
+  lowering code is used in two places. The compiler uses it to turn every static
+  configuration into a CSS rule at build time, and the runtime uses it to turn
+  configuration that changes while the page runs into inline styles. Because it
+  is one implementation, a box written with a fixed value and a box whose value
+  comes from state cannot disagree about what the value means.
+</p>
+
+<h3>One schema behind everything</h3>
+<p>
+  Every core widget, its configuration keys, its slots, its events, its accepted
+  aliases and its documentation are described once, in a single schema. The
+  compiler, the formatter, the analyzer, the language server, the API reference
+  on the website and the Skill that teaches AI agents the language all read from
+  it. When a widget gains a key, every one of those learns about it at the same
+  time, and none of them can contradict another.
+</p>
+
+<h2>Design Scale, in plain CSS</h2>
+<p>
+  The most distinctive promise LAYR makes is that a number in a file is a pixel
+  of the design. <code>w: 240</code> means 240 pixels of whichever design frame is
+  active: by default a 390-pixel phone, an 834-pixel tablet, a 1440-pixel desktop
+  or a 2560-pixel ultrawide, starting at 0, 600, 1024 and 1920 pixels of screen.
+</p>
+<p>
+  It would be easy to implement this with JavaScript that measures the window
+  and rescales everything on resize. LAYR does none of that. Design Scale compiles
+  to CSS. The global stylesheet defines a custom property, <code>--ds</code>,
+  registered as a length, with one value per frame inside a media query. Every
+  design-pixel value becomes a <code>calc()</code> against it.
+</p>
+
+<CodeBlock code={css} lang="css" />
+
+<p>
+  A few details in that output are worth unpacking, because each one solves a
+  real problem.
+</p>
+<ul>
+  <li>
+    <strong>The scale is clamped.</strong> Inside a frame, values follow the
+    screen, but never below 0.9 or above 1.15 times their design size. Scaling
+    fine-tunes; the frames do the real re-layout. The bounds are written in
+    <code>rem</code>, so they move with the reader's font-size setting.
+  </li>
+  <li>
+    <strong>Phones and tablets measure their short side</strong>
+    (<code>vmin</code>), so rotating a device does not rescale the whole page.
+    Desktop frames use the window's width.
+  </li>
+  <li>
+    <strong>The variable holds a thousand design pixels, not one.</strong>
+    Browsers store registered lengths with limited precision (Firefox rounds to a
+    sixtieth of a pixel), and multiplying a rounded single pixel by 240 would
+    multiply its rounding error too. Storing the length of 1000 design pixels and
+    dividing at the point of use keeps the error out of sight.
+  </li>
+  <li>
+    <strong>Registering the property matters.</strong> Because <code>--ds</code>
+    is registered as a length, it resolves once where it is declared and is
+    inherited as an absolute length. A subtree can declare its own Design Scale,
+    measured against its own width through container queries, without nested
+    containers confusing which element the units refer to.
+  </li>
+</ul>
+
+<Figure caption="The rendered width of w: 240 at every screen width, from LAYR's own formula with the default frames, phones and tablets held upright. Inside each frame it follows the screen within its clamp; at 390, 834, 1440 and 2560 it is exactly 240; where a new frame takes over, it steps back and starts again." wide>
+  <ScaleChart />
+</Figure>
+
+<p>
+  A value written for several frames, such as a heading that should be 32 on a
+  phone and 64 on a desktop, is not switched at a breakpoint. Between the frames'
+  design widths it follows a straight line in viewport width, with a
+  <code>rem</code> term so that zooming still works. Numbers flow; structure
+  (which way a row runs, whether something is shown) steps at frame boundaries.
+  Font sizes scale more gently than lengths and keep part of their size in
+  <code>rem</code>, and the analyzer warns (L6101) if a font's largest size is
+  more than two and a half times its smallest, which keeps text zoomable to 200%
+  as WCAG 1.4.4 requires.
+</p>
+
+<h2>The layout rules</h2>
+<p>
+  LAYR's layout model answers three questions for every object: how big is it,
+  how are its children arranged, and what happens when there is not enough room.
+</p>
+<p>
+  Size is one of three kinds. A <strong>fixed</strong> length is exactly that.
+  <strong><code>hug</code></strong>, the default, fits the content.
+  <strong><code>fill</code></strong> takes a share of the space the parent has
+  left. Since LAYR 3.3, the last two can be computed with: <code>w: hug + 24</code>
+  is the content's width plus 24, and it keeps tracking the content as the label
+  changes. In browsers that support CSS <code>calc-size()</code>, currently
+  Chrome and Edge, this is done entirely in CSS; in Firefox and Safari the runtime
+  measures the starting size before paint.
+</p>
+<p>
+  When a row runs out of room, it adapts in a fixed order rather than
+  overflowing at random:
+</p>
+<ol>
+  <li>Flexible content shrinks toward its minimum, and text wraps.</li>
+  <li>
+    Then it depends on what the row holds. A row of only hugging items, such as
+    chips, buttons or links, wraps onto new lines. A row with a filling pane
+    stacks into a column once that pane would be squeezed, and becomes a row
+    again when there is room.
+  </li>
+  <li>
+    Only if nothing can adapt, such as a fixed child wider than its fixed
+    parent, does content clip, and the compiler warns about it (L2101).
+  </li>
+</ol>
+<p>
+  The point is not that these rules are clever. It is that they are the same
+  every time and written down, so a layout's behaviour can be predicted from
+  its code, and <code>layr analyze</code> can explain any adaptation it made.
+</p>
+
+<h2>EIED: change anything, from anywhere, in order</h2>
+<p>
+  Real applications need one part of the page to affect another: a toolbar that
+  changes a card's colour, a page that reads a widget's measured size. Most UI
+  systems handle this with props passed down, context, or global state, each with
+  its own rules. LAYR has one mechanism, four operations wide.
+</p>
+<ul>
+  <li><strong>Export</strong> names what an object shares, like a small public interface.</li>
+  <li><strong>Extract</strong> reads a feature, including measured ones such as rendered size.</li>
+  <li><strong>Inject</strong> changes a feature.</li>
+  <li><strong>Duplicate</strong> shows a copy of an object at a chosen point in its history.</li>
+</ul>
+<p>
+  Objects are <em>protected by default</em>: nothing outside an object's owner
+  can change it. Using an Extract or Inject on a feature is the explicit act that
+  makes it reachable, with nothing else to declare. Anything that must never be
+  changed from outside is marked <code>!mut</code>, and an Inject against it is a
+  compile error (L3101). The one escape hatch, a forced inject, is allowed only in
+  files the project lists by name in <code>layr.yaml</code>, and the analyzer
+  lists every use.
+</p>
+<p>
+  Targets are addressed by id, or by a lookup path through the tree when an
+  object has no name. The compiler resolves every address, so a path broken by
+  an edit is an error (L3301) rather than a silent no-op.
+</p>
+<CodeBlock code={paths} lang="layr" />
+
+<h3>Layers, not overwrites</h3>
+<p>
+  What makes EIED manageable is that changes are not overwrites. Each operation
+  is a layer with a position, its <code>exeOrder</code>, in one chain per object.
+  Layers are reversible, and two operations on the same object at the same order
+  are an error (L3102) with the nearest free order offered as the fix. Every
+  feature then resolves in a single documented order.
+</p>
+
+<Figure caption="The order every feature resolves in. Injections apply by exeOrder, and any feature's chain can be listed with layr chain, or traced to the line that wrote it with layr analyze --explain." wide>
+  <Cascade />
+</Figure>
+
+<p>
+  Because the chain is known to the compiler, it can be shown. <code>layr chain</code>
+  lists the objects that operations change or read; naming one lists its layers in
+  order with the value each writes and where it is written. In the editor,
+  finding references on an id lists every Extract and Inject of that object. A
+  question like "why is this padding 20 here?" has an answer that a tool can
+  print.
+</p>
+
+<h2>Tools as first-class readers</h2>
+<p>
+  LAYR treats its tools, and AI agents, as readers of the code as important as
+  people, and that shapes several decisions.
+</p>
+<ul>
+  <li>
+    <strong>One canonical form.</strong> The formatter accepts every alias and
+    shorthand and writes one form, putting each object of a multi-line tree on its
+    own line so the hierarchy reads down the indentation.
+  </li>
+  <li>
+    <strong>An editor that keeps up.</strong> The language server answers
+    completion from the last compile instead of recompiling on every keystroke.
+    On the 23-file project that is LAYR's own website, that took completion from
+    33 to 82 milliseconds per keystroke down to between 1 and 6.
+  </li>
+  <li>
+    <strong>The project's own version, everywhere.</strong> The global
+    <code>layr</code> command, the VS Code extension and the agent tooling all run
+    the LAYR a project has installed, so a project written for one version is
+    never checked by the rules of another.
+  </li>
+  <li>
+    <strong>Agents get the language, not guesses.</strong> A command installs the
+    LAYR Skill and an MCP server into a project, so an AI agent works from the same
+    schema the compiler does.
+  </li>
+  <li>
+    <strong>Documentation that cannot rot.</strong> Every code snippet in the
+    documentation is compiled in continuous integration.
+  </li>
+</ul>
+
+<h2>What LAYR borrows, and what it owns</h2>
+<p>
+  LAYR does not reinvent the parts of the web that already work. React renders
+  the output, so React packages can be used inside LAYR and LAYR inside React
+  apps. Vite runs the development server and the build. npm distributes it. The
+  browser's own layout engine does the actual layout, because everything LAYR
+  decides is expressed as CSS.
+</p>
+<p>
+  What LAYR owns is meaning: what a number means, what happens when space runs
+  out, who may change what, and in which order. Those are the questions that
+  usually end up answered differently in every file of a project. Here they are
+  answered once, by a compiler, in a way that tools can check and explain.
+</p>

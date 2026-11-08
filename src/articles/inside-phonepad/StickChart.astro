@@ -1,0 +1,128 @@
+---
+/**
+ * What the game ends up with for a given thumb travel, before and after the
+ * stick rebuild. Values are PhonePad's docs/benchmarks.md section 6: its own
+ * output composed with a game deadzone of 0.15, rescaled (the common case).
+ * The points are the measured rows; lines between them are straight.
+ */
+const travel = [0, 5, 10, 15, 20, 25, 30, 50, 75, 100];
+const before = [0, 0, 0, 0, 0, 0, 6.4, 33.2, 66.6, 100];
+const after = [0, 1.2, 4.3, 8.1, 12.3, 17.0, 21.9, 44.2, 76.2, 100];
+
+const W = 760;
+const H = 380;
+const L = 64;
+const R = 150;
+const T = 44;
+const B = 56;
+const x = (v: number) => L + (v / 100) * (W - L - R);
+const y = (v: number) => H - B - (v / 100) * (H - T - B);
+const path = (s: number[]) => s.map((v, i) => `${i ? "L" : "M"}${x(travel[i]!).toFixed(1)} ${y(v).toFixed(1)}`).join(" ");
+const ticks = [0, 25, 50, 75, 100];
+---
+
+<svg viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="pp-stick-t">
+  <title id="pp-stick-t">
+    Line chart of game input against thumb travel. Before: nothing reaches the game for the first quarter of
+    the travel, then it climbs steeply. After: input starts rising from the first five percent and grows
+    smoothly to full lock. The data is in the table below.
+  </title>
+  {
+    ticks.map((t) => (
+      <g>
+        <line x1={L} x2={W - R} y1={y(t)} y2={y(t)} class="grid" />
+        <text x={L - 12} y={y(t) + 4} class="tick end">{t}%</text>
+        <text x={x(t)} y={H - B + 22} class="tick mid">{t}%</text>
+      </g>
+    ))
+  }
+  <text x={(L + W - R) / 2} y={H - 10} class="axis mid">Thumb travel from the centre</text>
+  <text x={L - 12} y={16} class="axis start">Input the game receives</text>
+
+  <rect x={x(0)} y={T} width={x(25) - x(0)} height={H - T - B} class="dead" />
+  <text x={(x(0) + x(25)) / 2} y={T + 18} class="deadl mid">dead before</text>
+
+  <path d={path(before)} class="before" />
+  <path d={path(after)} class="after" />
+  {
+    travel.map((t, i) => (
+      <g>
+        <circle cx={x(t)} cy={y(before[i]!)} r={4} class="pb">
+          <title>{`Before: ${t}% travel → ${before[i]}% game input`}</title>
+        </circle>
+        <circle cx={x(t)} cy={y(after[i]!)} r={4.5} class="pa">
+          <title>{`After: ${t}% travel → ${after[i]}% game input`}</title>
+        </circle>
+      </g>
+    ))
+  }
+  <text x={x(58)} y={y(64)} class="lab a end">After</text>
+  <text x={x(62)} y={y(40)} class="lab b start">Before</text>
+</svg>
+
+<style>
+  svg {
+    font-family: var(--sans);
+  }
+  .grid {
+    stroke: var(--line);
+  }
+  .tick {
+    fill: var(--ink3);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .axis {
+    fill: var(--ink2);
+    font-size: 13px;
+  }
+  .end {
+    text-anchor: end;
+  }
+  .mid {
+    text-anchor: middle;
+  }
+  .start {
+    text-anchor: start;
+  }
+  .dead {
+    fill: var(--ink);
+    fill-opacity: 0.035;
+  }
+  .deadl {
+    fill: var(--ink3);
+    font-size: 12px;
+  }
+  .before,
+  .after {
+    fill: none;
+    stroke-width: 2;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+  }
+  .before {
+    stroke: var(--ink3);
+    stroke-dasharray: 6 6;
+  }
+  .after {
+    stroke: var(--teal);
+  }
+  .pb {
+    fill: var(--ink3);
+    stroke: var(--raised);
+    stroke-width: 2;
+  }
+  .pa {
+    fill: var(--teal);
+    stroke: var(--raised);
+    stroke-width: 2;
+  }
+  .lab {
+    font-size: 14px;
+    font-weight: 600;
+    fill: var(--ink);
+  }
+  .lab.b {
+    fill: var(--ink2);
+  }
+</style>

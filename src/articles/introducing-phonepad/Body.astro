@@ -1,0 +1,261 @@
+---
+import { Image } from "astro:assets";
+import Figure from "../../components/article/Figure.astro";
+import Pieces from "./Pieces.astro";
+import controller from "./controller.jpg";
+import connect from "./connect.jpg";
+---
+
+<p>
+  PhonePad turns an Android phone into a wireless controller for a Windows PC.
+  Windows does not see a phone pretending to be a keyboard; it sees an Xbox 360
+  controller on an XInput slot, the same kind of device a game looks for when it
+  asks whether a pad is plugged in. The phone talks to the PC over the Wi-Fi
+  network the two already share. There is no Bluetooth pairing, no cable and
+  nothing to buy.
+</p>
+<p>
+  Version 1.0.0 was released on 13 September 2026. It is free, its source is
+  published under the GNU GPL-3.0, and this article explains what it is for,
+  how the parts fit together, and what it chooses not to do.
+</p>
+
+<h2>The problem it was built for</h2>
+<p>
+  A growing share of PC gaming assumes a controller. Console ports often treat
+  keyboard and mouse as an afterthought, and Xbox Cloud Gaming streams console
+  games that cannot get past their title screen without a gamepad. Most people
+  who run into that have no controller in the house, but almost all of them have
+  a phone within reach.
+</p>
+<p>
+  The obvious shortcuts do not hold up. A keyboard-mapping app is not a
+  controller as far as a game is concerned: the game reads XInput, not key
+  presses, and analogue sticks and triggers have no keyboard equivalent. A
+  Bluetooth approach needs a Bluetooth radio in the PC, which many desktops do
+  not have, including the one PhonePad was built on. What does work is a small
+  program on the PC that creates a <em>virtual</em> controller and feeds it
+  whatever the phone sends over the network. At the level a game looks, there is
+  no difference between that and a pad on a USB cable.
+</p>
+
+<Figure caption="The controller in landscape, on the Standard preset. Every control can be moved, resized, rotated, relabelled or hidden in the layout editor." wide panel={false}>
+  <Image src={controller} alt="PhonePad's on-screen controller in landscape: two sticks, a d-pad, A, B, X and Y, bumpers, triggers, and the View, Menu and Xbox buttons." widths={[800, 1200]} sizes="(min-width: 1100px) 960px, 100vw" />
+</Figure>
+
+<h2>Three parts</h2>
+<p>PhonePad is three pieces of software with one job between them.</p>
+<ul>
+  <li>
+    <strong>The app</strong>, for Android, is the controller itself: sticks,
+    triggers, a d-pad and buttons drawn on the screen. Nothing about the layout
+    is fixed. A layout editor moves, resizes, rotates and relabels every control,
+    and tunes how each one responds. Four presets ship (Standard, Racing,
+    Precision and Southpaw), and each layout keeps separate arrangements for
+    landscape and portrait, switching when the phone turns.
+  </li>
+  <li>
+    <strong>The companion</strong>, for Windows, is a single self-contained
+    program with no installer and no runtime to install first. It creates the
+    virtual controller through the ViGEmBus driver, checks and applies what the
+    phone sends, and shows what is going on: round trip, packet rate, loss, and
+    the reason for anything it rejected.
+  </li>
+  <li>
+    <strong>The protocol</strong> between them is written down in the
+    repository and tested from both sides against the same fixture file, so the
+    phone and the PC cannot quietly drift apart. It is published under the Apache
+    licence rather than the GPL, so anyone can write a compatible client or
+    companion without their own work falling under the GPL.
+  </li>
+</ul>
+
+<Figure caption="Input goes from the phone to the companion over your own network; the companion drives a virtual Xbox 360 controller that Windows treats as hardware. Game rumble travels back to the phone's motor." wide>
+  <Pieces />
+</Figure>
+
+<h2>Setting it up</h2>
+<p>Setup is deliberately short.</p>
+<ol>
+  <li>
+    On the PC, install the ViGEmBus driver once. It is what allows a program to
+    create a controller that Windows can see.
+  </li>
+  <li>
+    Run the companion. Windows asks whether to let it through the firewall on
+    private networks; it needs that to hear the phone. The companion then waits,
+    showing a six-digit pairing code.
+  </li>
+  <li>
+    Install the app from the same release, open it, and the PC appears within a
+    second or two. Tap it, type the six digits, and the phone becomes the
+    controller. After the first pairing, opening the app and tapping the PC is
+    the whole procedure.
+  </li>
+</ol>
+<p>
+  The quickest check that it worked is Windows' own game controller panel,
+  <code>joy.cpl</code>, which lists an "Xbox 360 Controller for Windows" whose
+  buttons and axes light up as the phone is touched.
+</p>
+
+<Figure caption="Finding the PC. The companion is discovered on the local network, and pairing takes a six-digit code shown on the PC." panel={false}>
+  <div class="phone-shot">
+    <Image src={connect} alt="The PhonePad app's connect screen, listing a PC that has not been paired yet, with a Pair button." widths={[280, 560]} sizes="280px" />
+  </div>
+</Figure>
+
+<h2>The cloud gaming detail</h2>
+<p>
+  Xbox Cloud Gaming works, with one thing worth knowing, because it explains a
+  failure that otherwise looks like a bug. A cloud gaming client binds a
+  controller to a streaming session at the moment it sees one
+  <em>arrive</em>. A pad that already existed when the stream started produces no
+  arrival, so the session ends up with no controller bound to it, even though the
+  client can read the pad perfectly well. The symptom is specific: the Xbox app's
+  own menus respond, and the game ignores everything.
+</p>
+<p>
+  So PhonePad has a way to arrive on demand. Holding the Xbox button on the phone
+  for a second unplugs the virtual pad and plugs it back in, which produces a
+  genuine arrival without dropping the connection. The companion can also do it
+  automatically when it notices a cloud game starting. That option is off by
+  default, because noticing works by looking at which programs are running,
+  which is a guess, and a wrong guess unplugs a controller someone may be using.
+</p>
+
+<h2>How it is meant to feel</h2>
+<p>
+  The touch sticks were rebuilt rather than tuned, and the reason says a lot
+  about the approach. A physical stick needs a deadzone around its centre to hide
+  spring slop and sensor drift. A touchscreen has neither, and the game at the
+  other end is already applying a deadzone of its own on the assumption that a
+  physical stick is attached. PhonePad originally added a second deadzone on top,
+  and the result was that roughly the first quarter of the thumb's travel did
+  nothing at all before the response arrived in a rush. Now the output starts
+  just past the game's own dead band the moment the thumb leaves the centre, and
+  the rest of the travel is spent on the range the game responds to. How much
+  compensation to apply can be tuned per control. The measured before-and-after
+  curves are in <a href="/articles/inside-phonepad/">Inside PhonePad</a>.
+</p>
+<p>
+  The triggers are analogue by default: sliding a thumb along one gives every
+  value between released and fully pressed, and a tap is still a full press.
+  Game rumble reaches the phone too. A phone has one vibration motor
+  where a controller has two, so the strong and weak motors are combined into
+  one.
+</p>
+
+<h2>What it refuses to do</h2>
+<p>Some of PhonePad's most important decisions are about what is not there.</p>
+<ul>
+  <li>
+    <strong>No account, no server, no telemetry.</strong> The phone talks to the
+    PC on your own network and to nothing else. Pairing establishes a key, and
+    every packet is authenticated with it, so nothing else on the network can
+    inject input.
+  </li>
+  <li>
+    <strong>No paywall on the controller.</strong> The free app is the product.
+    If paid extras ever appear, the project's roadmap commits to them being
+    additions rather than a charge for what already works.
+  </li>
+  <li>
+    <strong>No iOS version.</strong> Not for lack of interest: there is no way to
+    ship this on iOS that works as well as it does on Android, and doing it badly
+    would be worse than not doing it.
+  </li>
+  <li>
+    <strong>No numbers it has not measured.</strong> The latency, packet rate and
+    loss figures quoted for PhonePad each come from a recorded run on real
+    hardware, and the documentation lists what has not been measured yet, such as
+    battery drain and behaviour on a congested network.
+  </li>
+</ul>
+<p>
+  For the record, the measured figures on the development hardware (a Galaxy
+  S24 Ultra and a Windows 11 PC on ordinary home Wi-Fi) are a round trip of 4.9 to
+  8.0 milliseconds, typically about 5, a steady 249 packets a second, and no loss
+  across 42,805 consecutive packets.
+</p>
+
+<h2>Who it is for</h2>
+<p>
+  The plainest answer is someone with a Windows PC, an Android phone and no
+  controller, who wants to play something that expects one. That includes Xbox
+  Cloud Gaming in a browser, controller-first games on Steam or Game Pass,
+  emulators, and browser games that use the Gamepad API.
+</p>
+<p>
+  It is also for people who want to try a controller-heavy game before deciding
+  to buy a pad, and for tinkerers: the protocol is documented and openly
+  licensed, the layout format is plain data, and the source for both sides is
+  public.
+</p>
+
+<h2>What it does not do yet</h2>
+<ul>
+  <li>Gyro aiming is not implemented. The protocol reserves a flag for it; nothing else exists yet.</li>
+  <li>One phone at a time, so no local two-player.</li>
+  <li>
+    The Windows companion is not code-signed, so SmartScreen warns on first run.
+    Checksums for every release file are published alongside it.
+  </li>
+  <li>
+    ViGEmBus, the driver underneath, was archived by its author in 2023. It works
+    well and is what Parsec and DS4Windows rely on, and PhonePad keeps it behind
+    a single interface so that a successor can replace it without touching
+    anything else.
+  </li>
+</ul>
+<p>
+  The roadmap has no dates. In roughly the order they are likely to happen:
+  per-game tuning profiles with a short calibration step, a portable format for
+  sharing layouts, starting the companion at login, gyro aiming, and a second
+  phone.
+</p>
+
+<h2>Who is using it</h2>
+<p>
+  PhonePad 1.0 came out on 13 September 2026 with no launch and no promotion,
+  and people have been finding it on their own. By 8 November the Android app
+  had been downloaded from GitHub 939 times and the Windows companion 553 times.
+  In the thirty days to 7 November its website had about nine times as many
+  visitors as in the thirty days before, arriving through search engines and,
+  in the most recent week more than anywhere else, through links from ChatGPT.
+</p>
+<p>
+  People using it have started asking for what it does not do yet. The first
+  outside report, on 3 November, was that a phone sharing its own mobile hotspot
+  with the PC never finds the companion; a second user confirmed it the same
+  day, and the person who reported it followed up with a pull request proposing
+  a fix. That is the kind of feedback the roadmap above is meant to absorb.
+</p>
+
+<h2>Getting it</h2>
+<p>
+  PhonePad is not on the Play Store. Releases are published on
+  <a href="https://github.com/MNBLabs/phonepad/releases" rel="noopener">GitHub</a>:
+  an Android APK for 64-bit ARM phones and the Windows companion, with a SHA-256
+  checksum file. The <a href="https://phonepad.dynshift.com/setup/">setup guide</a>
+  walks through the first connection, and
+  <a href="https://phonepad.dynshift.com/troubleshooting/">troubleshooting</a>
+  covers firewalls, discovery and the rest. Bugs go to the repository's issues,
+  and questions and ideas to its discussions.
+</p>
+
+<style>
+  .phone-shot {
+    display: flex;
+    justify-content: center;
+    padding: 28px 0;
+    background: var(--raised);
+    border: 1px solid var(--line);
+    border-radius: var(--r-l);
+  }
+  .phone-shot :global(img) {
+    width: min(260px, 70%);
+    height: auto;
+    border-radius: 22px;
+  }
+</style>

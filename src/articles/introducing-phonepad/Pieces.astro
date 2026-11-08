@@ -1,0 +1,91 @@
+---
+/** The three parts of PhonePad and the path input takes through them. */
+---
+
+<svg viewBox="0 0 880 262" role="img" aria-labelledby="pp-pieces-t">
+  <title id="pp-pieces-t">
+    The phone app sends input over your Wi-Fi to the companion on the PC, which drives a virtual
+    Xbox 360 controller through ViGEmBus; games, browsers and Xbox Cloud Gaming read it as a real pad.
+    Rumble travels back the same way.
+  </title>
+  <g class="box">
+    <rect x="10" y="70" width="200" height="130" rx="18" />
+    <rect x="340" y="70" width="200" height="130" rx="18" />
+    <rect x="670" y="40" width="200" height="190" rx="18" class="soft" />
+  </g>
+  <text x="110" y="112" class="h">Phone</text>
+  <text x="110" y="138" class="s">PhonePad app</text>
+  <text x="110" y="158" class="s">Flutter + Kotlin</text>
+  <text x="440" y="112" class="h">PC</text>
+  <text x="440" y="138" class="s">PhonePad companion</text>
+  <text x="440" y="158" class="s">Rust, one .exe</text>
+  <text x="770" y="82" class="h">Windows</text>
+  <text x="770" y="112" class="s">ViGEmBus driver</text>
+  <text x="770" y="136" class="s">virtual Xbox 360 pad</text>
+  <text x="770" y="160" class="s">on an XInput slot</text>
+  <text x="770" y="196" class="s dim">games · browsers · cloud</text>
+
+  <path class="go" d="M214 118 H330" />
+  <path class="go head" d="M322 111 l9 7 -9 7" />
+  <text x="272" y="104" class="m">input · UDP</text>
+  <path class="back" d="M336 158 H220" />
+  <path class="back head" d="M228 151 l-9 7 9 7" />
+  <text x="278" y="182" class="m dim">rumble</text>
+
+  <path class="go" d="M544 135 H660" />
+  <path class="go head" d="M652 128 l9 7 -9 7" />
+
+  <text x="275" y="244" class="m dim">your own Wi-Fi: no account, no server</text>
+</svg>
+
+<style>
+  svg {
+    font-family: var(--sans);
+  }
+  .box rect {
+    fill: var(--raised-2);
+    stroke: var(--line-strong);
+    stroke-width: 1.5;
+  }
+  .box .soft {
+    fill: none;
+    stroke-dasharray: 5 6;
+  }
+  text {
+    text-anchor: middle;
+  }
+  .h {
+    fill: var(--ink);
+    font-size: 19px;
+    font-weight: 600;
+  }
+  .s {
+    fill: var(--ink2);
+    font-size: 14px;
+  }
+  .m {
+    fill: var(--teal);
+    font-family: var(--mono);
+    font-size: 12.5px;
+  }
+  .dim {
+    fill: var(--ink3);
+  }
+  .go,
+  .back {
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .go {
+    stroke: var(--teal);
+  }
+  .back {
+    stroke: var(--ink3);
+    stroke-dasharray: 4 5;
+  }
+  .back.head {
+    stroke-dasharray: none;
+  }
+</style>

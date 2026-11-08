@@ -1,0 +1,156 @@
+---
+import Figure from "../../components/article/Figure.astro";
+import Timeline from "./Timeline.astro";
+---
+
+<p>
+  DynShift is an independent software studio. It makes a small number of
+  focused tools, publishes most of them as open source, and ships each one
+  finished. It is run by its founder, who designs and builds the products,
+  writes the documentation and answers the issues. This article is about why it
+  is organised the way it is, and what that means for the people who use what it
+  makes.
+</p>
+
+<h2>What exists so far</h2>
+<p>
+  Two kinds of software have come out of the studio. The first is
+  <strong>products</strong>, things a person installs and uses.
+  <a href="/projects/phonepad/">PhonePad</a>, which turns an Android phone into a
+  wireless controller for a Windows PC, is the first to reach a public release.
+  The second is <strong>developer tools</strong>:
+  <a href="/projects/layr/">LAYR</a>, a compiled language for web layout, and four
+  <a href="/packages/">Flutter packages</a> on pub.dev, each written to remove one
+  recurring problem from app work. A private social app, Privogram, is in
+  development and has not been released.
+</p>
+
+<Figure caption="Every public release so far, by date. The Flutter packages came first, LAYR began as a React library in December 2025, and PhonePad 1.0 and LAYR 3 both shipped in September 2026." wide>
+  <Timeline />
+</Figure>
+
+<h2>One thing at a time</h2>
+<p>
+  The studio works on one project until it is done, releases it, and then starts
+  the next. There is no portfolio of half-built ideas competing for attention.
+  That sounds like a constraint, and it is one, chosen on purpose: a tool that is
+  nearly finished helps nobody, and attention split across five unfinished
+  things finishes none of them.
+</p>
+<p>
+  It also explains why the site lists so few projects. Something appears on
+  dynshift.com when it ships, not when it is announced.
+</p>
+
+<h2>What "finished" means</h2>
+<p>
+  "Finished" is easy to say and easy to stretch, so the studio defines it. A tool
+  leaves when three things are true.
+</p>
+
+<h3>It does the whole job it set out to do</h3>
+<p>
+  A controller that cannot rumble is not quite the controller it claims to be.
+  Rumble was at one point listed among PhonePad's limitations; it was made to
+  work before the first release, by reading the vibration request from the
+  virtual-controller driver as a notification and forwarding it to the phone's
+  motor, and verified end to end on a real phone.
+</p>
+
+<h3>It has been measured, not assumed to work</h3>
+<p>
+  Every performance figure quoted for a DynShift product comes from a recorded
+  run, with the method written next to the result. PhonePad's documentation goes
+  further and keeps a list of what has not been measured yet, so a reader can tell
+  the difference between "fast" and "measured to be fast". When a measurement
+  turns out to have been wrong, as one of PhonePad's packet-rate figures was, the
+  correction is published in the same place, with the explanation of what went
+  wrong left beside it.
+</p>
+
+<h3>Someone else could maintain it</h3>
+<p>
+  Code is written to be read. Comments explain why rather than what, and the
+  failure that shaped a piece of code is recorded in the code that fixed it.
+  LAYR's documentation compiles every one of its examples in continuous
+  integration, so the docs cannot quietly drift from the language. This is also
+  why so much of the work is public: source that strangers will read gets written
+  more carefully than source nobody will see.
+</p>
+
+<h2>Principles that show up in the products</h2>
+<p>
+  A few convictions recur across the projects, and they are easier to see in
+  what the products refuse to do than in anything the studio says about itself.
+</p>
+<ul>
+  <li>
+    <strong>Your data stays with you.</strong> PhonePad has no account, no server
+    and no telemetry; the phone talks to your PC on your network and to nothing
+    else. LAYR sites are built as static files that can be hosted anywhere.
+  </li>
+  <li>
+    <strong>No paywall on what works.</strong> Everything released so far
+    is free, and the free versions are the products, not demos of them. If paid
+    extras ever appear, they will be additions, never a charge for what already
+    works.
+  </li>
+  <li>
+    <strong>Honest limits.</strong> Each project documents what it does not do.
+    PhonePad will not ship on iOS, because there is no way to do it as well as on
+    Android, and doing it badly would be worse than not doing it.
+  </li>
+  <li>
+    <strong>Borrow infrastructure, own the meaning.</strong> LAYR renders through
+    React and lets the browser's own engine do the layout; PhonePad stands on a
+    proven virtual-controller driver rather than writing a kernel driver of its
+    own. The studio spends its effort where its tools say something new.
+  </li>
+</ul>
+
+<h2>Open source, and which licence</h2>
+<p>
+  The licence follows the kind of software. Products are published under the
+  <strong>GNU GPL-3.0</strong>: anyone can read, build, change and redistribute
+  them, and anything derived from them must stay open on the same terms.
+  Libraries are published under the <strong>MIT licence</strong>, because a
+  library is only useful if it can be used inside anything, including closed
+  software. Where a product defines a format others might want to implement,
+  such as PhonePad's wire protocol, that part is published under Apache-2.0, so
+  a compatible client does not inherit the GPL.
+</p>
+<p>
+  Public source lives under <a href="https://github.com/MNBLabs" rel="noopener">MNBLabs</a>
+  on GitHub, with issues and discussions open on every public repository. The
+  names DynShift and PhonePad are unregistered trademarks; forks are welcome,
+  under their own names.
+</p>
+
+<h2>How it is sustained</h2>
+<p>
+  People who find a tool useful can support the time behind it through
+  <a href="https://github.com/sponsors/MNBLabs" rel="noopener">GitHub Sponsors</a>
+  or <a href="https://ko-fi.com/nishanbhuinya" rel="noopener">Ko-fi</a>. Support
+  does not unlock anything; every user gets the same software.
+</p>
+
+<h2>Where it is going</h2>
+<p>
+  The first project to find an audience on its own is PhonePad: in its first
+  eight weeks it was downloaded from GitHub more than 900 times, without any
+  promotion, and its users have begun reporting the cases it does not cover yet
+  and proposing fixes for them.
+</p>
+<p>
+  Software is the starting point, not the boundary. The intention is to grow
+  from tools into games, and further out into hardware. None of that has a date,
+  and none of it will be announced before it exists: on this site, a project
+  appears when it ships.
+</p>
+<p>
+  In the meantime, the articles here explain the work in more depth than a
+  product page can: how the projects are built, what was measured, and what was
+  learned along the way. <a href="/articles/introducing-phonepad/">Introducing
+  PhonePad</a> and <a href="/articles/introducing-layr/">Introducing LAYR</a> are
+  good places to start.
+</p>

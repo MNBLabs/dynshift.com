@@ -1,0 +1,116 @@
+---
+/** The hot path, as PhonePad's README draws it, with where each stage runs. */
+const phone = [
+  { s: "Touch", note: "raw pointers" },
+  { s: "TouchRouter" },
+  { s: "Controller|State" },
+  { s: "UDP send" },
+];
+const pc = [
+  { s: "recv", note: "wakes on arrival" },
+  { s: "verify", note: "MAC · replay", hi: true },
+  { s: "ViGEmBus", note: "virtual pad" },
+  { s: "XInput" },
+];
+const W = 960;
+const by = 100;
+const bh = 52;
+const zone = { y: 44, h: 156 };
+const P = { x: 10, w: 420, bw: 90, gap: 10 };
+const C = { x: 530, w: 420, bw: 90, gap: 10 };
+const px = (i: number) => P.x + (P.w - (4 * P.bw + 3 * P.gap)) / 2 + i * (P.bw + P.gap);
+const cx = (i: number) => C.x + (C.w - (4 * C.bw + 3 * C.gap)) / 2 + i * (C.bw + C.gap);
+const wireFrom = px(3) + P.bw;
+const wireTo = cx(0);
+const mid = (P.x + P.w + C.x) / 2;
+---
+
+<svg viewBox={`0 0 ${W} 214`} role="img" aria-labelledby="pp-pipe-t">
+  <title id="pp-pipe-t">
+    On the phone: touch, the TouchRouter, the controller state and a UDP send. Over Wi-Fi, a 40-byte
+    packet. On the PC: receive, verify, the ViGEmBus virtual pad, and XInput, where games read it.
+  </title>
+  <text x={P.x + 10} y="30" class="lab">Phone · Dart, one isolate</text>
+  <text x={C.x + 10} y="30" class="lab">PC · Rust, a plain OS thread</text>
+  <rect x={P.x} y={zone.y} width={P.w} height={zone.h} rx="16" class="zone" />
+  <rect x={C.x} y={zone.y} width={C.w} height={zone.h} rx="16" class="zone" />
+  {
+    phone.map((b, i) => (
+      <g>
+        <rect x={px(i)} y={by} width={P.bw} height={bh} rx={10} class="st" />
+        {b.s.includes("|") ? (
+          <text x={px(i) + P.bw / 2} y={by + 22} class="s">
+            {b.s.split("|").map((line, k) => (
+              <tspan x={px(i) + P.bw / 2} dy={k ? 15 : 0}>{line}</tspan>
+            ))}
+          </text>
+        ) : (
+          <text x={px(i) + P.bw / 2} y={by + 30} class="s">{b.s}</text>
+        )}
+        {b.note && <text x={px(i) + P.bw / 2} y={by + bh + 24} class="note">{b.note}</text>}
+      </g>
+    ))
+  }
+  {
+    pc.map((b, i) => (
+      <g>
+        <rect x={cx(i)} y={by} width={C.bw} height={bh} rx={10} class:list={["st", { hi: b.hi }]} />
+        <text x={cx(i) + C.bw / 2} y={by + 30} class="s">{b.s}</text>
+        {b.note && <text x={cx(i) + C.bw / 2} y={by + bh + 24} class="note">{b.note}</text>}
+      </g>
+    ))
+  }
+  <path d={`M${wireFrom + 4} ${by + bh / 2} H${wireTo - 4}`} class="wire" />
+  <path d={`M${wireTo - 13} ${by + bh / 2 - 7} l9 7 -9 7`} class="wire" />
+  <text x={mid} y={by + bh / 2 - 14} class="m">40 bytes</text>
+  <text x={mid} y={by + bh / 2 + 26} class="m">≤ 250 Hz</text>
+</svg>
+
+<style>
+  svg {
+    font-family: var(--sans);
+  }
+  .zone {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-dasharray: 5 6;
+  }
+  .st {
+    fill: var(--raised-2);
+    stroke: var(--line-strong);
+    stroke-width: 1.4;
+  }
+  .st.hi {
+    stroke: var(--teal);
+  }
+  text {
+    text-anchor: middle;
+  }
+  .lab {
+    text-anchor: start;
+    fill: var(--ink2);
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .s {
+    fill: var(--ink);
+    font-family: var(--mono);
+    font-size: 11.5px;
+  }
+  .note {
+    fill: var(--ink3);
+    font-size: 12px;
+  }
+  .m {
+    fill: var(--teal);
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .wire {
+    fill: none;
+    stroke: var(--teal);
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+</style>

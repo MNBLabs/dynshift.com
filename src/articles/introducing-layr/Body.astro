@@ -1,0 +1,301 @@
+---
+import CodeBlock from "../../components/article/CodeBlock.astro";
+import { Image } from "astro:assets";
+import Figure from "../../components/article/Figure.astro";
+import playground from "./playground.webp";
+
+// The first example in LAYR's documentation (docs/content/start/introduction.md), unchanged.
+const example = `Page(
+  .name(Profile)
+  .route('/')
+
+  var int likes = 0
+
+  Scaffold(
+    .config(color: canvas)
+    .body(
+      Column(
+        .config(
+          w: fill
+          padding: all(32)
+          xAlign: mid
+        )
+        Row(
+          .config(
+            color: panel
+            cornerRadius: 16
+            gap: 16
+            padding: all(20)
+            yAlign: mid
+            .border(
+              color: line
+              width: 1
+            )
+          )
+          Container(
+            .config(
+              size: 56
+              color: accent
+              cornerRadius: 999
+            )
+          )
+          Column(
+            .config(gap: 2)
+            Text(
+              .config(
+                size: 18
+                weight: semibold
+              )
+              .obj('Ada Lovelace')
+            )
+            Text(
+              .config(color: muted)
+              .obj('Wrote the first published program, in 1843')
+            )
+            Text(
+              .config(
+                size: 13
+                color: faint
+              )
+              .obj('$likes people like this')
+            )
+          )
+          Button(
+            .preset(default)
+            .config(label: 'Like')
+            .fnc { likes++ }
+          )
+        )
+      )
+    )
+  )
+)`;
+
+const start = `npm i -g @dynshift/layr
+layr create my-app
+cd my-app
+npm install
+layr dev`;
+---
+
+<p>
+  LAYR is a language for the layout of web pages. Its name is an acronym,
+  <strong>Layout Authoritative Yet Responsive</strong>, and that phrase is a fair
+  summary of the idea: the layout you write is the layout you get, and it still
+  adapts to every screen. You describe what the page <em>is</em> (objects inside
+  objects, measured in the numbers from your design) and a compiler turns that
+  into static CSS and React components, checking it before anything runs.
+</p>
+<p>
+  LAYR 3.0 was released on 25 September 2026 and the current version is 3.3.0.
+  It is open source under the MIT licence and published on npm as
+  <code>@dynshift/layr</code>. This article covers what problem it addresses, what
+  a LAYR file looks like, the ideas it is built on, and who it is for.
+</p>
+
+<h2>The problem</h2>
+<p>
+  Building a page from a design is mostly an act of translation. A designer draws
+  a frame 390 pixels wide with a 24-pixel gap and a 16-pixel corner radius. A
+  developer then turns those numbers into rems, viewport units,
+  <code>clamp()</code> expressions and media queries, picks a flexbox or grid
+  arrangement, and decides what should happen at each breakpoint. Somewhere in
+  that translation the original intent is lost. Reading the stylesheet back, it
+  is hard to see the page; reading the page, it is hard to say why it behaves the
+  way it does at 700 pixels wide.
+</p>
+<p>
+  The usual remedies each solve part of it. Utility-class frameworks are quick to
+  write and hard to read back. Component libraries bring a layout system along
+  with buttons, forms and a visual theme that may not be wanted. Neither makes the
+  structure of the page and the structure of the code the same thing.
+</p>
+
+<h2>What it looks like</h2>
+<p>
+  Here is a complete LAYR page, the first example in the documentation. It draws
+  a profile row: a coloured circle, three lines of text and a button that counts
+  likes.
+</p>
+
+<CodeBlock code={example} lang="layr" />
+
+<p>
+  It reads from top to bottom in the shape of the result. A <code>Page</code>
+  has a name and an address. <code>var int likes = 0</code> is state that the page
+  remembers; anything that reads it updates when it changes. A
+  <code>Scaffold</code> is the screen, and its <code>.body</code> is a slot, the
+  place where content goes. <code>Column</code> and <code>Row</code> stack their
+  objects down and across. <code>.config(...)</code> sets an object's features,
+  and colour names such as <code>panel</code> and <code>accent</code> come from the
+  theme. The button's <code>.fnc</code> runs when it is pressed: round brackets
+  hold LAYR, and curly braces hold TypeScript.
+</p>
+<p>
+  The number <code>56</code> deserves a closer look. It is not 56 CSS pixels. It
+  is 56 pixels <em>of the design frame</em>, and LAYR scales it to fit whatever
+  screen the page is on. And on a narrow phone, when the text would be squeezed,
+  the row stacks into a column by itself. Nothing in the code asks for that.
+</p>
+
+<Figure caption="The LAYR playground: code on the left, the compiled result on the right, with tabs for the generated CSS and React module. The m, t and w buttons resize the preview to LAYR's phone, tablet and wide design frames." wide panel={false}>
+  <Image src={playground} alt="The LAYR playground in a browser, with LAYR code in an editor on the left and a live preview showing two filled panels and an 'Add one' button on the right." widths={[800, 1600]} sizes="(min-width: 1100px) 960px, 100vw" />
+</Figure>
+
+<h2>The ideas it is built on</h2>
+
+<h3>The code's shape is the page's shape</h3>
+<p>
+  Objects nest the way they appear on screen. Logic is kept in clearly marked
+  places (<code>.config</code>, <code>.fnc</code> and TypeScript blocks) so that
+  the tree of objects stays readable as a picture of the page.
+</p>
+
+<h3>Design units, not CSS units</h3>
+<p>
+  LAYR calls its unit model <strong>Design Scale</strong>. A project declares
+  design frames, by default a 390-pixel phone, an 834-pixel tablet, a 1440-pixel
+  desktop and a 2560-pixel ultrawide, and numbers in LAYR files are pixels of
+  whichever frame is active. A single value scales smoothly with the screen
+  within its frame; a value given for several frames is interpolated between
+  them; and structural choices, such as which way a row runs or whether something
+  is shown at all, switch at the frame boundaries. There are no media queries to
+  write.
+</p>
+
+<h3>Deterministic layout</h3>
+<p>
+  Every width and height is one of three kinds: a fixed length, <code>hug</code>
+  (fit the content, the default) or <code>fill</code> (share the space the parent
+  has left). When space runs out, a row adapts in a fixed, documented order:
+  flexible content shrinks and text wraps first; then a row of small items wraps
+  onto new lines, while a row containing a filling pane stacks into a column; and
+  only when nothing can adapt does content clip, with a compiler warning. The
+  <code>layr analyze</code> command can explain any adaptation it made.
+</p>
+
+<h3>Reachable from anywhere, protected by default</h3>
+<p>
+  Any part of a LAYR app can read, change or copy any object's features, from
+  any page or widget, through four operations together called
+  <strong>EIED</strong>: Export, Inject, Extract and Duplicate. Objects are
+  protected by default, and using one of these operations is the explicit way in.
+  Changes are ordered, reversible layers that the compiler knows about, and
+  anything marked <code>!mut</code> cannot be changed from outside at all.
+  <a href="/articles/how-layr-works/">How LAYR works</a> goes into this in detail.
+</p>
+
+<h3>One canonical form</h3>
+<p>
+  LAYR accepts shorthand and aliases while you type, but
+  <code>layr format</code> writes every file the same way, so code reads the same
+  in every project, and AI agents that write LAYR have one correct form to
+  follow.
+</p>
+
+<h2>Written by people and by agents</h2>
+<p>
+  LAYR is designed to be written by people and by AI coding agents, and several
+  of its choices suit an agent better than hand-written HTML, CSS and React do.
+</p>
+<ul>
+  <li>
+    <strong>One answer instead of many.</strong> The same layout can be written
+    dozens of ways in CSS (flexbox or grid, margins or gaps, rems or pixels, a
+    media query here and a <code>clamp()</code> there), and an agent has to guess
+    which one a project uses. LAYR has one canonical form, and
+    <code>layr format</code> rewrites anything else into it.
+  </li>
+  <li>
+    <strong>The result follows from the code.</strong> Every feature resolves in
+    one documented order, and layout adapts to a smaller screen by fixed rules
+    that <code>layr analyze</code> can explain. What a page does on a phone is
+    something the code determines, not something found out by looking.
+  </li>
+  <li>
+    <strong>Mistakes come back as instructions.</strong> Problems are diagnostics
+    with a code, <code>layr analyze --json</code> lists them in a form a program
+    can read, and <code>layr explain</code> describes each one. They are precise
+    enough for an agent to correct its own work, the way a person would.
+  </li>
+  <li>
+    <strong>The reference ships with the language.</strong>
+    <code>layr skills install</code> adds the LAYR Skill to a project: the rules
+    of the language and a reference for every widget, key and diagnostic,
+    generated from the compiler's own schema and matched to the installed
+    version. It also registers an MCP server whose tools look up widgets, check a
+    snippet and analyse the project, and the documentation is published as
+    <code>llms.txt</code> for agents that read the web.
+  </li>
+</ul>
+<p>
+  None of this is a separate mode. It is the same compiler, formatter and
+  diagnostics a person uses, which is the point: an agent and a person working
+  on the same project are checked by the same rules.
+</p>
+
+<h2>What you get</h2>
+<div class="table-scroll">
+  <table>
+    <thead><tr><th>Piece</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td>The language</td><td><code>.layr</code> files: pages, widgets, functions, state and layout</td></tr>
+      <tr><td>The compiler</td><td>Checks names, types, layout and every EIED operation before anything runs, then emits CSS and React</td></tr>
+      <tr><td>The runtime</td><td>Signals, the injection cascade, measurement, animation and routing</td></tr>
+      <tr><td>The CLI</td><td><code>layr create</code>, <code>dev</code>, <code>build</code>, <code>format</code>, <code>analyze</code>, <code>test</code>, <code>upgrade</code> and more</td></tr>
+      <tr><td>Tooling</td><td>A VS Code extension, a language server, an MCP server and a Skill that teaches AI agents the language</td></tr>
+    </tbody>
+  </table>
+</div>
+
+<h2>How it fits with React</h2>
+<p>
+  LAYR compiles to React components, so React is the engine underneath, but not
+  the way LAYR is written. The two work in both directions: a LAYR app can use any
+  React package, even as JSX written directly in the tree, and an existing React
+  app can import <code>.layr</code> files. That makes it possible to adopt LAYR
+  one page or one component at a time.
+</p>
+
+<h2>Who it is for</h2>
+<p>
+  LAYR suits people who build websites from designs and want the numbers in the
+  design to be the numbers in the code: designers who write their own front
+  ends, developers who work closely with design files, and small teams who would
+  rather read a layout than reverse-engineer one. Developers coming from Flutter
+  will find the object tree, the slots and the hug-and-fill sizing familiar.
+</p>
+<p>
+  It is less suited to projects that are mostly application logic with little
+  layout, or teams heavily invested in a particular CSS methodology who are happy
+  with it. LAYR is static-first: <code>layr build</code> prerenders pages to
+  static files, which is how its own website is built and deployed.
+</p>
+
+<h2>Where it came from</h2>
+<p>
+  The name has a history. LAYR 1.x, released in December 2025, was a small
+  library of React components that brought Flutter's layout widgets, such as
+  <code>Container</code>, <code>Row</code> and <code>Column</code>, to React.
+  LAYR 3 keeps the name and much of that vocabulary, but it is a different kind
+  of thing: a language with its own compiler, runtime and tooling. It replaced
+  the component library as the default <code>@dynshift/layr</code> on npm, and
+  there was never a public LAYR 2. LAYR 1.x remains installable as
+  <code>@dynshift/layr@v1</code> and lives on its own branch of the repository,
+  with a migration guide in the documentation for projects moving across.
+</p>
+
+<h2>Trying it</h2>
+<p>
+  The quickest way is the
+  <a href="https://layr.dynshift.com/playground">playground</a>, which compiles
+  LAYR in the browser with nothing to install. To start a project:
+</p>
+<pre><code set:text={start} /></pre>
+<p>
+  The global <code>layr</code> command always runs the version a project has
+  installed, so a project never builds with a different LAYR from the one it was
+  written for. The <a href="https://layr.dynshift.com/docs">documentation</a> teaches
+  the language through live examples that can be edited in place, and every
+  snippet in it is compiled in continuous integration.
+</p>

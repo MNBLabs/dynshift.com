@@ -95,8 +95,11 @@ const H = headingLevel === 2 ? "h2" : "h3";
     margin-top: 14px;
   }
   @media (max-width: 820px) {
+    /* A column again, full width: centred, the cover (whose image is
+       absolutely placed) would shrink to nothing. */
     .feature {
       display: flex;
+      align-items: stretch;
     }
   }
   /* On phones the line wraps; a separator would start a line, so spacing does its job. */

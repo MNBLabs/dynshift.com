@@ -1,0 +1,122 @@
+---
+/** From .layr files to what the browser loads, as packages/compiler and packages/model do it. */
+const stages = [
+  { t: "lex", s: ["tokens"] },
+  { t: "parse", s: ["tree +", "diagnostics"] },
+  { t: "analyze", s: ["names, types,", "EIED graph"] },
+  { t: "lower", s: ["config → CSS"] },
+  { t: "emit", s: ["per file"] },
+];
+const y = 40;
+const h = 80;
+const mid = y + h / 2;
+const src = { x: 10, w: 120 };
+const bw = 118;
+const gap = 24;
+const sx = (i: number) => src.x + src.w + gap + i * (bw + gap);
+const end = sx(stages.length - 1) + bw;
+const out = { x: end + 30, w: 120 };
+const lowerX = sx(3) + bw / 2;
+---
+
+<svg viewBox="0 0 1000 290" role="img" aria-labelledby="ly-pipe-t">
+  <title id="ly-pipe-t">
+    LAYR files and layr.yaml go through lexing, parsing, project analysis, lowering and emitting. The output is
+    one JavaScript module and one stylesheet per file, plus global CSS holding the base layout rules and the
+    Design Scale variables. Lowering is shared with the runtime. One schema feeds the compiler, the formatter,
+    the analyzer, the language server, the API reference and the AI Skill.
+  </title>
+  <rect x={src.x} y={y} width={src.w} height={h} rx="12" class="src" />
+  <text x={src.x + src.w / 2} y={mid - 4} class="h">.layr files</text>
+  <text x={src.x + src.w / 2} y={mid + 16} class="s">layr.yaml</text>
+  {
+    stages.map((st, i) => (
+      <g>
+        <rect x={sx(i)} y={y} width={bw} height={h} rx={12} class="st" />
+        <text x={sx(i) + bw / 2} y={st.s.length > 1 ? mid - 10 : mid - 4} class="h mono">{st.t}</text>
+        {st.s.map((line, k) => (
+          <text x={sx(i) + bw / 2} y={(st.s.length > 1 ? mid + 10 : mid + 16) + k * 15} class="s">{line}</text>
+        ))}
+        <path d={`M${(i === 0 ? src.x + src.w : sx(i - 1) + bw) + 5} ${mid} H${sx(i) - 5}`} class="arrow" />
+      </g>
+    ))
+  }
+  <path d={`M${end + 5} ${mid} H${end + 16} V${y + 21} H${out.x - 4}`} class="arrow" />
+  <path d={`M${end + 16} ${mid} V${y + h - 21} H${out.x - 4}`} class="arrow" />
+  <rect x={out.x} y={y} width={out.w} height="40" rx="10" class="out" />
+  <text x={out.x + out.w / 2} y={y + 25} class="o">module.js</text>
+  <rect x={out.x} y={y + h - 40} width={out.w} height="40" rx="10" class="out" />
+  <text x={out.x + out.w / 2} y={y + h - 15} class="o">module.css</text>
+  <text x={out.x + out.w / 2} y={y + h + 26} class="s">+ global CSS:</text>
+  <text x={out.x + out.w / 2} y={y + h + 42} class="s">base rules, --ds</text>
+
+  <path d={`M${lowerX} ${y + h + 5} V${y + h + 16}`} class="tick" />
+  <text x={lowerX} y={y + h + 32} class="s dim">lowering is shared with the runtime,</text>
+  <text x={lowerX} y={y + h + 48} class="s dim">so static and dynamic configs agree</text>
+
+  <rect x={sx(0)} y="200" width={end - sx(0)} height="70" rx="14" class="schema" />
+  <text x={(sx(0) + end) / 2} y="229" class="h">One schema</text>
+  <text x={(sx(0) + end) / 2} y="252" class="s">
+    widgets, config keys, slots, aliases and docs, read by the compiler, formatter, analyzer, LSP, API reference and Skill
+  </text>
+</svg>
+
+<style>
+  svg {
+    font-family: var(--sans);
+  }
+  .src,
+  .st {
+    fill: var(--raised-2);
+    stroke: var(--line-strong);
+    stroke-width: 1.4;
+  }
+  .src {
+    stroke-dasharray: 5 6;
+    fill: none;
+  }
+  .out {
+    fill: none;
+    stroke: var(--ember);
+    stroke-width: 1.5;
+  }
+  .schema {
+    fill: none;
+    stroke: var(--line-strong);
+    stroke-dasharray: 5 6;
+  }
+  text {
+    text-anchor: middle;
+  }
+  .h {
+    fill: var(--ink);
+    font-size: 15px;
+    font-weight: 600;
+  }
+  .mono,
+  .o {
+    font-family: var(--mono);
+  }
+  .o {
+    fill: var(--ink);
+    font-size: 13px;
+  }
+  .s {
+    fill: var(--ink2);
+    font-size: 12px;
+  }
+  .dim {
+    fill: var(--ink3);
+  }
+  .arrow {
+    fill: none;
+    stroke: var(--ember);
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+  }
+  .tick {
+    stroke: var(--ink3);
+    stroke-dasharray: 2 3;
+  }
+</style>
