@@ -42,6 +42,20 @@ const show = Boolean(slot) && !legal;
   )
 }
 
+<script>
+  /* Google can mark a slot "filled" and still draw nothing (a blank or
+     blocked creative), which would leave the label and the two rules around
+     an empty gap. The frame appears only once the ad has real height. */
+  for (const ad of document.querySelectorAll<HTMLElement>("[data-ad-slot-lazy]")) {
+    const ins = ad.querySelector<HTMLElement>("ins");
+    if (!ins) continue;
+    const check = () =>
+      ad.toggleAttribute("data-ad-shown", ins.getAttribute("data-ad-status") === "filled" && ins.offsetHeight >= 40);
+    new ResizeObserver(check).observe(ins);
+    new MutationObserver(check).observe(ins, { attributes: true, attributeFilter: ["data-ad-status"] });
+  }
+</script>
+
 <style>
   /* Nothing at all until Google fills the slot. */
   .ad {
@@ -54,13 +68,13 @@ const show = Boolean(slot) && !legal;
      around a real advertisement. Nothing that could be mistaken for a card,
      a button or a project tile: those are rounded and raised, and this is
      neither. */
-  .ad:has(ins[data-ad-status="filled"]) {
+  .ad[data-ad-shown] {
     margin-block: clamp(2.75rem, 7vw, 4.5rem);
     padding-block: 14px 18px;
     border-top: 1px solid var(--line);
     border-bottom: 1px solid var(--line);
   }
-  .ad:has(ins[data-ad-status="filled"]) .ad-label {
+  .ad[data-ad-shown] .ad-label {
     display: block;
     font-size: 0.7rem;
     letter-spacing: 0.14em;

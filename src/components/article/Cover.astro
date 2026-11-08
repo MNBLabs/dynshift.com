@@ -4,6 +4,7 @@
  * image. Covers are drawn at the social-card ratio, 40:21; a tighter `ratio`
  * crops to the middle of the art, where every cover keeps its subject.
  */
+import { Image } from "astro:assets";
 import type { ArticleMeta } from "../../lib/articles";
 interface Props {
   cover: ArticleMeta["cover"];
@@ -25,13 +26,25 @@ const svg =
     svg ? (
       <Fragment set:html={svg} />
     ) : (
+      "image" in cover && typeof cover.image !== "string" ? (
+        <Image
+          src={cover.image}
+          alt={alt}
+          widths={[480, 800, 1200, 1672].filter((w) => w <= (cover.image as ImageMetadata).width)}
+          sizes="(min-width: 1180px) 1120px, calc(100vw - 2 * var(--gutter))"
+          loading={eager ? "eager" : "lazy"}
+          decoding="async"
+          fetchpriority={eager ? "high" : undefined}
+        />
+      ) : (
       <img
-        src={"image" in cover ? cover.image : ""}
+        src={"image" in cover ? (cover.image as string) : ""}
         alt={alt}
         loading={eager ? "eager" : "lazy"}
         decoding="async"
         fetchpriority={eager ? "high" : undefined}
       />
+      )
     )
   }
 </div>

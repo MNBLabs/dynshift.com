@@ -1,0 +1,76 @@
+---
+/**
+ * A code sample in an article, highlighted at build time (no script ships).
+ *
+ * LAYR is highlighted with its own TextMate grammar, copied unchanged from
+ * the LAYR repository (vscode/syntaxes/layr.tmLanguage.json, MIT); refresh
+ * the copy when the grammar changes there. The colours are the site's own
+ * tokens from global.css, nothing new: structure in teal, keywords in the
+ * accent, values in gold and ember, names and keys in the ink greys.
+ */
+import { Code } from "astro:components";
+import type { LanguageRegistration, ThemeRegistration } from "shiki";
+import layrGrammar from "./layr.tmLanguage.json";
+
+interface Props {
+  code: string;
+  lang: "layr" | "css" | "ts" | "sh";
+  /** What the sample is, for screen readers. */
+  label?: string;
+}
+const { code, lang, label } = Astro.props;
+
+const layr = {
+  ...(layrGrammar as object),
+  name: "layr",
+  embeddedLangs: ["typescript"],
+} as unknown as LanguageRegistration;
+
+/* global.css tokens, as hex because the highlighter writes them inline. */
+const ink = "#f3f2f6";
+const ink2 = "#a8a6b4";
+const ink3 = "#7a788b";
+const accent = "#ff3d9e";
+const accentInk = "#ffd2e9";
+const teal = "#2ed3c4";
+const gold = "#ffc46b";
+const ember = "#ff6444";
+
+const theme: ThemeRegistration = {
+  name: "dynshift",
+  type: "dark",
+  colors: { "editor.background": "#151515", "editor.foreground": ink },
+  tokenColors: [
+    { settings: { foreground: ink } },
+    { scope: ["comment", "punctuation.definition.comment"], settings: { foreground: ink3, fontStyle: "italic" } },
+    {
+      scope: ["keyword", "storage", "keyword.control", "keyword.other.construct", "keyword.control.at-rule", "punctuation.definition.keyword"],
+      settings: { foreground: accent },
+    },
+    { scope: ["keyword.operator", "punctuation", "meta.brace", "punctuation.accessor"], settings: { foreground: ink3 } },
+    {
+      scope: ["entity.name.type", "entity.name.tag", "support.class", "entity.name.class", "entity.other.attribute-name.class", "entity.other.attribute-name.pseudo-class"],
+      settings: { foreground: teal },
+    },
+    { scope: ["entity.name.function", "support.function", "entity.name.function.modifier"], settings: { foreground: accentInk } },
+    {
+      scope: ["variable.other.property", "support.type.property-name", "meta.property-name", "entity.other.attribute-name", "variable.parameter"],
+      settings: { foreground: ink2 },
+    },
+    { scope: ["support.type", "storage.type"], settings: { foreground: accent } },
+    { scope: ["string", "constant.other.color", "support.constant", "constant.language", "support.constant.property-value"], settings: { foreground: gold } },
+    { scope: ["constant.numeric", "keyword.other.unit"], settings: { foreground: ember } },
+    { scope: ["variable", "variable.other.declaration", "variable.argument.css"], settings: { foreground: ink } },
+  ],
+};
+
+const language = lang === "layr" ? layr : lang === "ts" ? "typescript" : lang === "sh" ? "shellscript" : lang;
+---
+
+<Code
+  code={code}
+  lang={language}
+  embeddedLangs={lang === "layr" ? ["typescript"] : []}
+  theme={theme}
+  aria-label={label}
+/>

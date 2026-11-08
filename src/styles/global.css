@@ -207,6 +207,10 @@ a {
 a:hover {
   text-decoration-color: var(--accent);
 }
+/* A name with a hyphen in it never breaks across lines at the hyphen. */
+a[href*="ko-fi.com"] {
+  white-space: nowrap;
+}
 
 .muted {
   color: var(--ink2);
@@ -245,12 +249,6 @@ a:hover {
 }
 .prose li {
   margin-bottom: 0.5em;
-}
-
-@media (max-width: 560px) {
-  :root {
-    --header-h: 82px;
-  }
 }
 
 @media (prefers-reduced-motion: reduce) {

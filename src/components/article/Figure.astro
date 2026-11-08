@@ -29,6 +29,18 @@ const { caption, wide = false, panel = true, minWidth = panel ? 600 : 0 } = Astr
   .fig {
     margin: 2.4em 0;
   }
+  /* A wide figure's art uses the whole wide track, and its caption steps
+     back in to the text column, so captions line up with the prose. */
+  .wide {
+    display: grid;
+    grid-template-columns: subgrid;
+  }
+  .wide > .art {
+    grid-column: 1 / -1;
+  }
+  .wide > figcaption {
+    grid-column: 2;
+  }
   .art {
     border-radius: var(--r-l);
     overflow: hidden;

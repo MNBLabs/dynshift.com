@@ -1,4 +1,5 @@
 ---
+import { getImage } from "astro:assets";
 /**
  * One article. The body is the article's own Body.astro; everything around
  * it (title block, cover, related pages, the next articles, the structured
@@ -24,7 +25,14 @@ const { default: Body } = await a.load();
 const others = (await getArticles()).filter((o) => o.slug !== a.slug).slice(0, 2);
 
 const url = new URL(`/articles/${a.slug}/`, Astro.site).href;
-const image = a.og ?? ("image" in a.cover ? a.cover.image : "/og.png");
+/* The social card: an explicit og image, else the cover at 1200 x 630. */
+const image =
+  a.og ??
+  ("image" in a.cover
+    ? typeof a.cover.image === "string"
+      ? a.cover.image
+      : (await getImage({ src: a.cover.image, width: 1200, height: 630, fit: "cover", format: "jpg", quality: 82 })).src
+    : "/og.png");
 const schema = [
   {
     "@context": "https://schema.org",

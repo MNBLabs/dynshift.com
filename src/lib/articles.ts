@@ -35,8 +35,11 @@ export interface ArticleMeta {
   related: { label: string; href: string; note?: string }[];
   /** Words the cover stands for, for screen readers. */
   coverAlt: string;
-  /** Inline SVG markup for the cover, or a path under /public for an image. */
-  cover: { svg: string } | { image: string };
+  /**
+   * Inline SVG markup for the cover, or an image: an imported asset (resized
+   * and used for the social card too) or a path under /public.
+   */
+  cover: { svg: string } | { image: string | ImageMetadata };
   /** The social card, a path under /public. */
   og?: string;
   /** Ordering among articles published the same day, highest first. */

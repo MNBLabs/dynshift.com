@@ -18,9 +18,10 @@
 .a-body > * {
   grid-column: text;
 }
+/* Figures and code may use the wider track; tables stay at reading width,
+   in line with the text around them, and scroll sideways if they must. */
 .a-body > .wide,
-.a-body > pre,
-.a-body > .table-scroll {
+.a-body > pre {
   grid-column: wide;
 }
 .a-body p {
